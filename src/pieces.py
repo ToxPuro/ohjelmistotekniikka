@@ -2,8 +2,8 @@ import pygame as p
 from move import Move
 
 class Rule():
-    def get_moves(self, player, position, board):
-        moves = self.generate_moves(player, position, board)
+    def get_moves(self, player, position, board, piece):
+        moves = self.generate_moves(player, position, board, piece)
         if self.check(moves, board):
             return moves
         return []
@@ -11,19 +11,19 @@ class Rule():
     def check(self, move, board):
         return True
 
-    def generate_moves(self, player, position, board):
-        new_positions = self.generate_positions(player, position, board)
+    def generate_moves(self, player, position, board, piece):
+        new_positions = self.generate_positions(player, position, board, piece)
         return [Move(position, new_position, board) for new_position in new_positions]
 
 class CombinedSlidingAttack(Rule):
     def __init__(self, rules):
         self.rules = rules
 
-    def generate_positions(self, player, position, board):
+    def generate_positions(self, player, position, board, piece):
         new_positions = []
         for rule in self.rules:
-            new_position = rule.generate_positions(player, position, board)[0]
-            if not board.state[new_position[0]][new_position[1]].is_empty():
+            new_position = rule.generate_positions(player, position, board, piece)[0]
+            if not board.state[new_position[0]][new_position[1]].is_empty() and board.state[new_position[0]][new_position[1]].player != piece.player:
                 return [new_position]
             position = new_position
         return new_positions
@@ -32,10 +32,10 @@ class CombinedSlide(Rule):
     def __init__(self, rules):
         self.rules = rules
 
-    def generate_positions(self, player, position, board):
+    def generate_positions(self, player, position, board, piece):
         new_positions = []
         for rule in self.rules:
-            new_position = rule.generate_positions(player, position, board)[0]
+            new_position = rule.generate_positions(player, position, board, piece)[0]
             if not board.state[new_position[0]][new_position[1]].is_empty():
                 break
             new_positions.append(new_position)
@@ -47,7 +47,7 @@ class Jump(Rule):
         self.x_hop = x_hop
         self.y_hop = y_hop
 
-    def generate_positions(self,player, position, board):
+    def generate_positions(self,player, position, board, piece):
         new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
         if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
             if board.state[new_position[0]][new_position[1]].is_empty():
@@ -59,10 +59,10 @@ class JumpAttack(Rule):
         self.x_hop = x_hop
         self.y_hop = y_hop
 
-    def generate_positions(self,player, position, board):
+    def generate_positions(self,player, position, board, piece):
         new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
         if 0<=new_position[0]<board.dimension and 0<=new_position[1]<board.dimension:
-            if not board.state[new_position[0]][new_position[1]].is_empty():
+            if not board.state[new_position[0]][new_position[1]].is_empty() and board.state[new_position[0]][new_position[1]].player != piece.player:
                 return [new_position]
         return []
 
@@ -73,7 +73,7 @@ class SingleSlide(Rule):
         self.x_increment = x_increment
         self.y_increment = y_increment
     
-    def generate_positions(self, player, position, board):
+    def generate_positions(self, player, position, board, piece):
         if player == 1:
             new_position = (position[0]+self.y_increment, position[1]+self.x_increment)
         else:
@@ -87,15 +87,15 @@ class RuleStar(Rule):
     def __init__(self, rule):
         self.rule = rule
 
-    def generate_positions(self,player, position, board):
-        return CombinedSlide([self.rule for i in range(board.dimension)]).generate_positions(player, position, board)
+    def generate_positions(self,player, position, board, piece):
+        return CombinedSlide([self.rule for i in range(board.dimension)]).generate_positions(player, position, board, piece)
 
 class RuleStarAttacks(Rule):
     def __init__(self, rule):
         self.rule = rule
 
-    def generate_positions(self,player, position, board):
-        return CombinedSlidingAttack([self.rule for i in range(board.dimension)]).generate_positions(player, position, board)
+    def generate_positions(self,player, position, board, piece):
+        return CombinedSlidingAttack([self.rule for i in range(board.dimension)]).generate_positions(player, position, board, piece)
 
 
 
@@ -116,7 +116,7 @@ class Piece():
     def get_moves(self, position, board):
         result = []
         for rule in self.rules:
-            result.extend(rule.get_moves(self.player, position, board))
+            result.extend(rule.get_moves(self.player, position, board, self))
         return result
 
     def is_empty(self):
