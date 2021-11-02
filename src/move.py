@@ -8,7 +8,7 @@ class Move():
         self.piece_captured = board.state[self.end_row][self.end_col]
 
         self.is_pawn_promotion = False
-        if self.piece_moved.is_pawn() and self.end_row == 0:
+        if self.piece_moved.is_pawn() and (self.end_row == 0 or self.end_row == 7):
             self.is_pawn_promotion = True
 
     def __eq__(self, other):

@@ -13,6 +13,7 @@ from pieces import Rook, Pawn, Empty_Space, Knight, Bishop, Queen, King
 
 def generate_initial_state():
     load_images()
+    pieces = {"bQ": Queen(2, IMAGES["bQ"]), "wQ": Queen(1, IMAGES["wQ"])}
     initial_state = [
             [Rook(2, IMAGES["bR"]), Knight(2, IMAGES["bN"]), Bishop(2, IMAGES["bB"]), Queen(2, IMAGES["bQ"]), King(2, IMAGES["bK"]), Bishop(2, IMAGES["bB"]), Knight(2, IMAGES["bN"]), Rook(2, IMAGES["bR"])],
             [Pawn(2, IMAGES["bp"]) for i in range(8)],
@@ -24,7 +25,7 @@ def generate_initial_state():
             [Rook(1, IMAGES["wR"]), Knight(1, IMAGES["wN"]), Bishop(1, IMAGES["wB"]), Queen(1, IMAGES["wQ"]), King(1, IMAGES["wK"]), Bishop(1, IMAGES["wB"]), Knight(1, IMAGES["wN"]), Rook(1, IMAGES["wR"])]
         ]
 
-    return initial_state
+    return initial_state, pieces
     
 
 
@@ -40,8 +41,8 @@ def main():
     screen = p.display.set_mode((WIDHT, HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
-    initial_state = generate_initial_state()
-    board = Board(initial_state, IMAGES)
+    initial_state, pieces = generate_initial_state()
+    board = Board(initial_state, pieces)
     running = True
     selected_square = ()
     player_clicks = []

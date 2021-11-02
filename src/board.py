@@ -3,7 +3,7 @@ from move import Move
 import pygame as p
 
 class Board():
-    def __init__(self, state, images, dimension=8, square_size=64, player_num=2):
+    def __init__(self, state, pieces, dimension=8, square_size=64, player_num=2):
         self.state = state
         self.dimension = dimension
         self.square_size = square_size
@@ -11,7 +11,7 @@ class Board():
         self.king_locations = {1: (7,4), 2: (0,4)}
         self.player_num = player_num
         self.move_log = []
-        self.images = images
+        self.pieces = pieces
     
     def drawGameState(self, screen):
         self.drawSquares(screen)
@@ -39,7 +39,11 @@ class Board():
         self.move_log.append(move)
 
         if move.is_pawn_promotion:
-            self.state[move.end_row][move.end_col] = Queen(1, self.images["wQ"])
+            if self.turn == 1:
+                self.state[move.end_row][move.end_col] = self.pieces["wQ"]
+            else:
+                self.state[move.end_row][move.end_col] = self.pieces["bQ"]
+            
         if swap:
             if self.turn == 1:
                 self.turn = 2

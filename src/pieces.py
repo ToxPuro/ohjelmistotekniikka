@@ -90,6 +90,13 @@ class RuleStar(Rule):
     def generate_positions(self,player, position, board):
         return CombinedSlide([self.rule for i in range(board.dimension)]).generate_positions(player, position, board)
 
+class RuleStarAttacks(Rule):
+    def __init__(self, rule):
+        self.rule = rule
+
+    def generate_positions(self,player, position, board):
+        return CombinedSlidingAttack([self.rule for i in range(board.dimension)]).generate_positions(player, position, board)
+
 
 
 
@@ -125,21 +132,25 @@ class Piece():
 class Knight(Piece):
     def __init__(self, player, image):
         self.rules = [Jump(1,-2), Jump(-1,-2), Jump(1,2), Jump(-1,2), Jump(2,-1), Jump(2,1), Jump(-2,-1), Jump(-2,1)]
+        self.rules.extend([JumpAttack(1,-2), JumpAttack(-1,-2), JumpAttack(1,2), JumpAttack(-1,2), JumpAttack(2,-1), JumpAttack(2,1), JumpAttack(-2,-1), JumpAttack(-2,1)])
         super().__init__(player, image)
 
 class Rook(Piece):
     def __init__(self, player, image):
         self.rules = [RuleStar(SingleSlide(0,1)), RuleStar(SingleSlide(0,-1)), RuleStar(SingleSlide(1,0)), RuleStar(SingleSlide(-1,0))]
+        self.rules.extend([RuleStarAttacks(SingleSlide(0,1)), RuleStarAttacks(SingleSlide(0,-1)), RuleStarAttacks(SingleSlide(1,0)), RuleStarAttacks(SingleSlide(-1,0))])
         super().__init__(player, image)
 
 class Queen(Piece):
     def __init__(self, player, image):
         self.rules = [RuleStar(SingleSlide(0,1)), RuleStar(SingleSlide(0,-1)), RuleStar(SingleSlide(1,0)), RuleStar(SingleSlide(-1,0)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
+        self.rules.extend([RuleStarAttacks(SingleSlide(0,1)), RuleStarAttacks(SingleSlide(0,-1)), RuleStarAttacks(SingleSlide(1,0)), RuleStarAttacks(SingleSlide(-1,0)), RuleStarAttacks(SingleSlide(-1,-1)), RuleStarAttacks(SingleSlide(1,-1)), RuleStarAttacks(SingleSlide(1,1)), RuleStarAttacks(SingleSlide(-1,1))])
         super().__init__(player, image)
 
 class Bishop(Piece):
     def __init__(self, player, image):
         self.rules = [RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
+        self.rules = [RuleStarAttacks(SingleSlide(1,-1)), RuleStarAttacks(SingleSlide(-1,-1)), RuleStarAttacks(SingleSlide(1,1)), RuleStarAttacks(SingleSlide(-1,1))]
         super().__init__(player, image)
 
 class Pawn(Piece):
@@ -159,7 +170,8 @@ class Pawn(Piece):
 
 class King(Piece):
     def __init__(self, player, image):
-        self.rules = [CombinedSlide([SingleSlide(0,-1)])]
+        self.rules = [CombinedSlide([SingleSlide(0,-1)]), CombinedSlide([SingleSlide(1,-1)]), CombinedSlide([SingleSlide(-1,-1)]), CombinedSlide([SingleSlide(1,0)]), CombinedSlide([SingleSlide(-1,0)]), CombinedSlide([SingleSlide(0,1)]), CombinedSlide([SingleSlide(1,1)]), CombinedSlide([SingleSlide(-1,-1)])]
+        self.rules.extend([CombinedSlidingAttack([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]), CombinedSlidingAttack([SingleSlide(1,0)]), CombinedSlidingAttack([SingleSlide(-1,0)]), CombinedSlidingAttack([SingleSlide(0,1)]), CombinedSlidingAttack([SingleSlide(1,1)]), CombinedSlidingAttack([SingleSlide(-1,-1)])])
         super().__init__(player, image)
 
     def is_king(self):
