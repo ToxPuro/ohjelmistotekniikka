@@ -36,6 +36,8 @@ class Board():
         self.state[move.start_row][move.start_col] = Empty_Space()
         self.state[move.end_row][move.end_col] = move.piece_moved
         self.move_log.append(move)
+
+
         
         if move.piece_moved.is_king():
             self.king_locations[self.turn] = (move.end_row, move.end_col)
@@ -45,6 +47,15 @@ class Board():
             self.promote(move)
             
         if not simulation:
+            if move.piece_moved.is_king and move.end_col - move.start_col == 2:
+                self.state[move.start_row][move.start_col+1] = self.state[move.end_row][move.end_col+1]
+                self.state[move.end_row][move.end_col+1] = Empty_Space()
+
+            if move.piece_moved.is_king and move.end_col - move.start_col == -2:
+                self.state[move.start_row][move.start_col-1] = self.state[move.end_row][move.end_col-2]
+                self.state[move.end_row][move.end_col-2] = Empty_Space()
+            
+
             self.delete_en_passant_squares()
             if move.is_double_pawn_forward:
                 self.create_en_passant_square(move)
@@ -57,25 +68,23 @@ class Board():
         else:
             self.turn = 1
 
-    def get_all_possible_moves(self, player):
+    def get_all_possible_moves(self, player, no_king=False):
         moves = []
         for row in range(len(self.state)):
             for col in range(len(self.state[row])):
                 piece = self.state[row][col]
-                if player == piece.player:
+                ## ugly implementation to sidestep infinite recursion where 
+                if not (piece.is_king() and no_king) and player == piece.player:
                     piece_moves = piece.get_moves((row, col), self)
-                    if piece.is_pawn():
-                        for move in piece_moves:
-                            print(move)
                     moves.extend(piece_moves)
         return moves
 
     def get_all_valid_moves(self):
         moves = self.get_all_possible_moves(self.turn)
-        print(self.king_locations[self.turn])
         for i in range(len(moves)-1,-1,-1):
             self.makeMove(moves[i], simulation=True)
             if self.inCheck():
+                print("inCheck")
                 moves.remove(moves[i])
             self.undoMove(swap=False)
 
@@ -103,9 +112,10 @@ class Board():
     def square_under_attack(self, position):
         for player in range(1, self.player_num+1):
             if player != self.turn:
-                opponents_moves = self.get_all_possible_moves(player)
+                opponents_moves = self.get_all_possible_moves(player, no_king=True)
                 for move in opponents_moves:
                     if move.end_row == position[0] and move.end_col == position[1]:
+                        print("under attack")
                         return True
         return False
 
@@ -128,6 +138,8 @@ class Board():
             self.state[move.end_row][move.end_col] = self.pieces["wQ"]
         else:
             self.state[move.end_row][move.end_col] = self.pieces["bQ"]
+
+        
 
             
 

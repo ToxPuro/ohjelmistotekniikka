@@ -62,8 +62,10 @@ class Queen(Piece):
 
 class Bishop(Piece):
     def __init__(self, player, image):
-        self.rules = [RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
-        self.rules = [RuleStarAttacks(SingleSlide(1,-1)), RuleStarAttacks(SingleSlide(-1,-1)), RuleStarAttacks(SingleSlide(1,1)), RuleStarAttacks(SingleSlide(-1,1))]
+        self.rules = [Jump(1,-2), Jump(-1,-2), Jump(1,2), Jump(-1,2), Jump(2,-1), Jump(2,1), Jump(-2,-1), Jump(-2,1)]
+        self.rules.extend([JumpAttack(1,-2), JumpAttack(-1,-2), JumpAttack(1,2), JumpAttack(-1,2), JumpAttack(2,-1), JumpAttack(2,1), JumpAttack(-2,-1), JumpAttack(-2,1)])
+        # self.rules = [RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
+        # self.rules = [RuleStarAttacks(SingleSlide(1,-1)), RuleStarAttacks(SingleSlide(-1,-1)), RuleStarAttacks(SingleSlide(1,1)), RuleStarAttacks(SingleSlide(-1,1))]
         super().__init__(player, image)
 
 class Pawn(Piece):
@@ -89,20 +91,17 @@ class King(Piece):
     def __init__(self, player, image):
         self.rules = [Castling(), CombinedSlide([SingleSlide(0,-1)]), CombinedSlide([SingleSlide(1,-1)]), CombinedSlide([SingleSlide(-1,-1)]), CombinedSlide([SingleSlide(1,0)]), CombinedSlide([SingleSlide(-1,0)]), CombinedSlide([SingleSlide(0,1)]), CombinedSlide([SingleSlide(1,1)]), CombinedSlide([SingleSlide(-1,-1)])]
         self.rules.extend([CombinedSlidingAttack([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]), CombinedSlidingAttack([SingleSlide(1,0)]), CombinedSlidingAttack([SingleSlide(-1,0)]), CombinedSlidingAttack([SingleSlide(0,1)]), CombinedSlidingAttack([SingleSlide(1,1)]), CombinedSlidingAttack([SingleSlide(-1,-1)])])
-        self.rules_after_moved = self.rules
-        self.rules_after_moved.remove(0)
+
         super().__init__(player, image)
 
     def is_king(self):
         return True
-
-    def set_as_moved(self):
-        self.rules = self.rules_after_moved
-        super().set_as_moved()
+        
 
 class Empty_Space(Piece):
     def __init__(self):
         self.player = 0
+        self.moved = False
 
     def draw(self, screen, square_size, position):
         pass

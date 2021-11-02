@@ -109,4 +109,30 @@ class EnPassant(Rule):
                     return [new_position]
         
         return []
-        
+
+class Castling(Rule):
+    def get_moves(self,player, position, board, piece):
+        moves = []
+        if piece.moved:
+            return []
+
+        if board.inCheck():
+            return []
+
+        can_castle_left = True
+        if (board.state[position[0]][position[1]-1].is_empty() and board.state[position[0]][position[1]-2].is_empty() and board.state[position[0]][position[1]-3].moved == False) is False:
+            can_castle_left = False
+        if board.square_under_attack((position[0], position[1]-1)) or board.square_under_attack((position[0], position[1]-2)):
+            can_castle_left = False
+        if can_castle_left:
+            moves.append(Move(position, (position[0], position[1]-2), board))
+
+        can_castle_right = True
+        if (board.state[position[0]][position[1]+1].is_empty() and board.state[position[0]][position[1]+2].is_empty() and board.state[position[0]][position[1]+3].moved == False) is False:
+            can_castle_right = False
+        if board.square_under_attack((position[0], position[1]+1)) or board.square_under_attack((position[0], position[1]+2)):
+            can_castle_right = False
+        if can_castle_right:
+            moves.append(Move(position, (position[0], position[1]+2), board))
+        print(moves)
+        return moves
