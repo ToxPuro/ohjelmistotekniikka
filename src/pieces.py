@@ -62,10 +62,8 @@ class Queen(Piece):
 
 class Bishop(Piece):
     def __init__(self, player, image):
-        self.rules = [Jump(1,-2), Jump(-1,-2), Jump(1,2), Jump(-1,2), Jump(2,-1), Jump(2,1), Jump(-2,-1), Jump(-2,1)]
-        self.rules.extend([JumpAttack(1,-2), JumpAttack(-1,-2), JumpAttack(1,2), JumpAttack(-1,2), JumpAttack(2,-1), JumpAttack(2,1), JumpAttack(-2,-1), JumpAttack(-2,1)])
-        # self.rules = [RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
-        # self.rules = [RuleStarAttacks(SingleSlide(1,-1)), RuleStarAttacks(SingleSlide(-1,-1)), RuleStarAttacks(SingleSlide(1,1)), RuleStarAttacks(SingleSlide(-1,1))]
+        self.rules = [RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
+        self.rules.extend([RuleStarAttacks(SingleSlide(-1,-1)), RuleStarAttacks(SingleSlide(1,-1)), RuleStarAttacks(SingleSlide(1,1)), RuleStarAttacks(SingleSlide(-1,1))])
         super().__init__(player, image)
 
 class Pawn(Piece):
