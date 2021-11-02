@@ -53,6 +53,9 @@ class Jump(Rule):
                 return [new_position]
         return []
 
+    def __str__(self):
+        return f"x_hop: {self.x_hop}, y_hop {self.y_hop}"
+
 class JumpAttack(Rule):
     def __init__(self, x_hop, y_hop):
         self.x_hop = x_hop
