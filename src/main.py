@@ -1,5 +1,5 @@
 import pygame as p
-from board import Board
+from board import Board, Move
 import generate
 
 WIDHT = HEIGHT = 512
@@ -45,12 +45,14 @@ def main():
     running = True
     selected_square = ()
     player_clicks = []
+    valid_moves = board.get_all_valid_moves()
+    move_made = False
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouset.get_pos()
+                location = p.mouse.get_pos()
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
                 if selected_square == (row, col):
@@ -60,8 +62,16 @@ def main():
                     selected_square = (row, col)
                     player_clicks.append(selected_square)
                 if len(player_clicks) == 2:
-                    pass
-
+                    move = Move(player_clicks[0], player_clicks[1], board)
+                    if move in valid_moves:
+                        board.makeMove(move)
+                        selected_square = ()
+                        player_clicks = []
+        
+        if move_made:
+            valid_moves = board.get_all_valid_moves()
+            move_made = False
+        
         board.drawGameState(screen)
         clock.tick(MAX_FPS)
         p.display.flip()
