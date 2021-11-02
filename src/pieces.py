@@ -97,6 +97,17 @@ class RuleStarAttacks(Rule):
     def generate_positions(self,player, position, board, piece):
         return CombinedSlidingAttack([self.rule for i in range(board.dimension)]).generate_positions(player, position, board, piece)
 
+class PawnDoubleForward(Rule):
+    def get_moves(self, player, position, board, piece):
+        if player == 1:
+            new_position = (position[0]-2, position[1])
+        else:
+            new_position = (position[0]+2, position[1])
+        
+        if 0<=new_position[1]<board.dimension:
+            return [Move(position, new_position, board, double_pawn_forward=True)]
+        return []
+
 
 
 
@@ -159,7 +170,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.rules = [CombinedSlide([SingleSlide(0,-1), SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]) ]
+        self.rules = [CombinedSlide([SingleSlide(0,-1)]), PawnDoubleForward(), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]) ]
         super().__init__(player, image)
     
     def is_pawn(self):

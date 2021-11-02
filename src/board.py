@@ -30,10 +30,10 @@ class Board():
                 self.state[row][col].draw(screen, self.square_size, (row, col))
         
 
-    def makeMove(self, move, swap=True):
+    def makeMove(self, move, simulation=False):
         self.state[move.start_row][move.start_col] = Empty_Space()
         self.state[move.end_row][move.end_col] = move.piece_moved
-        move.piece_moved.set_as_moved()
+        
         if move.piece_moved.is_king():
             self.king_locations[self.turn] = (move.end_row, move.end_col)
         self.move_log.append(move)
@@ -44,7 +44,8 @@ class Board():
             else:
                 self.state[move.end_row][move.end_col] = self.pieces["bQ"]
             
-        if swap:
+        if not simulation:
+            move.piece_moved.set_as_moved()
             if self.turn == 1:
                 self.turn = 2
             else:
@@ -57,6 +58,9 @@ class Board():
                 piece = self.state[row][col]
                 if player == piece.player:
                     piece_moves = piece.get_moves((row, col), self)
+                    if piece.is_pawn():
+                        for move in piece_moves:
+                            print(move)
                     moves.extend(piece_moves)
         return moves
 
@@ -64,7 +68,7 @@ class Board():
         moves = self.get_all_possible_moves(self.turn)
         print(self.king_locations[self.turn])
         for i in range(len(moves)-1,-1,-1):
-            self.makeMove(moves[i], swap=False)
+            self.makeMove(moves[i], simulation=True)
             if self.inCheck():
                 moves.remove(moves[i])
             self.undoMove(swap=False)
