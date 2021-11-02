@@ -113,12 +113,15 @@ class Piece():
         return result
 
     def is_empty(self):
-        False
+        return False
+
+    def is_king(self):
+        return False
 
 
 class Knight(Piece):
     def __init__(self, player, image):
-        self.rules = [Jump(1,-2), Jump(-1,-2), Jump(1,2), Jump(-1,2)]
+        self.rules = [Jump(1,-2), Jump(-1,-2), Jump(1,2), Jump(-1,2), Jump(2,-1), Jump(2,1), Jump(-2,-1), Jump(-2,1)]
         super().__init__(player, image)
 
 class Rook(Piece):
@@ -149,6 +152,9 @@ class King(Piece):
     def __init__(self, player, image):
         self.rules = [SingleSlide(0,-1)]
         super().__init__(player, image)
+
+    def is_king(self):
+        return True
 
 class Empty_Space(Piece):
     def __init__(self):
