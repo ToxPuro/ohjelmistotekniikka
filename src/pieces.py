@@ -73,34 +73,28 @@ class JumpAttack(Rule):
 
 
     
-
-
-class Up(Rule):
-    def generate_move(self,player, position, board):
-        new_position = self.generate_positions(player, position, board)[0]
-        if board.state[new_position[0]][new_position[1]].is_empty():
-            return [Move(position, new_position ,board)]
-        return []
-
+class SingleSlide(Rule):
+    def __init__(self, x_increment, y_increment):
+        self.x_increment = x_increment
+        self.y_increment = y_increment
+    
     def generate_positions(self, player, position, board):
-        if player==1:
-            return [(position[0]-1, position[1])]
+        if player == 1:
+            new_position = (position[0]+self.y_increment, position[1]+self.x_increment)
         else:
-            return  [(position[0]+1, position[1])]
+            new_position = (position[0]-self.y_increment, position[1]+self.x_increment)
+        if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
+            return [new_position]
+        return [position]
 
-class Left(Rule):
+
+class RuleStar(Rule):
+    def __init__(self, rule):
+        self.rule = rule
+
     def generate_move(self,player, position, board):
-        new_position = self.generate_positions(player, position, board)[0]
-        if board.state[new_position[0]][new_position[1]].is_empty():
-            return [Move(position, new_position ,board)]
-        return []
+        return CombinedSlide([self.rule for i in range(board.dimension)]).generate_move(player, position, board)
 
-    def generate_positions(self, player, position, board):
-            return  [(position[0], position[1]-1)]
-
-class UpStar(Rule):
-    def generate_move(self,player, position, board):
-        return CombinedSlide([Up() for i in range(board.dimension)]).generate_move(player, position, board)
 
 
 
@@ -142,7 +136,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.moves = [UpStar()]
+        self.moves = [RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(-1,1))]
         super().__init__(player, image)
 
     def get_moves(self, position, board):
