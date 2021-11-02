@@ -118,6 +118,9 @@ class Piece():
     def is_king(self):
         return False
 
+    def is_pawn(self):
+        return False
+
 
 class Knight(Piece):
     def __init__(self, player, image):
@@ -141,8 +144,14 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.rules = [SingleSlide(0,-1)]
+        self.rules = [CombinedSlide([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]) ]
         super().__init__(player, image)
+    
+    def is_pawn(self):
+        return True
+
+    def __str__(self):
+        return "Pawn"
 
 
 
@@ -150,7 +159,7 @@ class Pawn(Piece):
 
 class King(Piece):
     def __init__(self, player, image):
-        self.rules = [SingleSlide(0,-1)]
+        self.rules = [CombinedSlide([SingleSlide(0,-1)])]
         super().__init__(player, image)
 
     def is_king(self):

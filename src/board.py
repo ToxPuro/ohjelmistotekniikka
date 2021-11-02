@@ -1,9 +1,9 @@
-from pieces import Empty_Space
+from pieces import Empty_Space, Queen
 from move import Move
 import pygame as p
 
 class Board():
-    def __init__(self, state, dimension=8, square_size=64, player_num=2):
+    def __init__(self, state, images, dimension=8, square_size=64, player_num=2):
         self.state = state
         self.dimension = dimension
         self.square_size = square_size
@@ -11,6 +11,7 @@ class Board():
         self.king_locations = {1: (7,4), 2: (0,4)}
         self.player_num = player_num
         self.move_log = []
+        self.images = images
     
     def drawGameState(self, screen):
         self.drawSquares(screen)
@@ -33,8 +34,12 @@ class Board():
         self.state[move.start_row][move.start_col] = Empty_Space()
         self.state[move.end_row][move.end_col] = move.piece_moved
         if move.piece_moved.is_king():
+            print("King moved", move.piece_moved)
             self.king_locations[self.turn] = (move.end_row, move.end_col)
         self.move_log.append(move)
+
+        if move.is_pawn_promotion:
+            self.state[move.end_row][move.end_col] = Queen(1, self.images["wQ"])
         if swap:
             if self.turn == 1:
                 self.turn = 2
@@ -48,22 +53,18 @@ class Board():
                 piece = self.state[row][col]
                 if player == piece.player:
                     piece_moves = piece.get_moves((row, col), self)
-                    if piece_moves != []:
-                        for move in piece_moves:
-                            print(f"piece move {move}")
                     moves.extend(piece_moves)
         return moves
 
-    def get_all_valid_moves(self, player=None):
-        if player == None:
-            player = self.turn
-        moves = self.get_all_possible_moves(player)
+    def get_all_valid_moves(self):
+        moves = self.get_all_possible_moves(self.turn)
+        print(self.king_locations[self.turn])
         for i in range(len(moves)-1,-1,-1):
             self.makeMove(moves[i], swap=False)
             if self.inCheck():
                 moves.remove(moves[i])
             self.undoMove(swap=False)
-            
+
         return moves
 
     def inCheck(self):
@@ -76,6 +77,8 @@ class Board():
             self.state[move.end_row][move.end_col] = move.piece_captured
             if swap:
                 self.switchTurnBack()
+            if move.piece_moved.is_king():
+                self.king_locations[self.turn] = (move.start_row, move.start_col)
 
     def switchTurnBack(self):
         if self.turn == 1:

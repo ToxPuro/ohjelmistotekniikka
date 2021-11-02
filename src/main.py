@@ -41,7 +41,7 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     initial_state = generate_initial_state()
-    board = Board(initial_state)
+    board = Board(initial_state, IMAGES)
     running = True
     selected_square = ()
     player_clicks = []
@@ -63,19 +63,20 @@ def main():
                     player_clicks.append(selected_square)
                 if len(player_clicks) == 2:
                     move = Move(player_clicks[0], player_clicks[1], board)
-                    print(move)
-                    if move in valid_moves:
-                        move_made = True
-                        board.makeMove(move)
-                    selected_square = ()
-                    player_clicks = []
+                    for i in range(len(valid_moves)):
+                        if move == valid_moves[i]:
+                            move_made = True
+                            board.makeMove(move)
+                            selected_square = ()
+                            player_clicks = []
+
+                    
+                    if not move_made:
+                        player_clicks = [selected_square]
         
         if move_made:
             valid_moves = board.get_all_valid_moves()
-            for move in valid_moves:
-                print(move)
             move_made = False
-        
         board.drawGameState(screen)
         clock.tick(MAX_FPS)
         p.display.flip()

@@ -7,6 +7,10 @@ class Move():
         self.piece_moved = board.state[self.start_row][self.start_col]
         self.piece_captured = board.state[self.end_row][self.end_col]
 
+        self.is_pawn_promotion = False
+        if self.piece_moved.is_pawn() and self.end_row == 0:
+            self.is_pawn_promotion = True
+
     def __eq__(self, other):
         if not isinstance(other, Move):
             return False
