@@ -14,14 +14,27 @@ class Rule():
 class Up(Rule):
     def generate_move(self,player, position, board):
         if player==1:
-            return [Move(position, (position[0]-1, position[1]),board)]
-        return [Move(position, (position[0]+1, position[1]),board)]
+            new_position = (position[0]-1, position[1])
+        else:
+            new_position = (position[0]+1, position[1])
+        if board.state[new_position[0]][new_position[1]].is_empty():
+            return [Move(position, new_position ,board)]
+        return []
 
 class UpStar(Rule):
     def generate_move(self,player, position, board):
+        moves = []
         if player==1:
-            return [Move(position, (i, position[1]),board) for i in range(position[0]-1,-1,-1)]
-        [Move(position, (i, position[1]),board) for i in range(position[0]+1,board.dimension)]
+            for i in range(position[0]-1,-1,-1):
+                new_position = (i, position[1])
+                if board.state[new_position[0]][new_position[1]].is_empty():
+                    moves.append(Move(position, new_position, board))
+        else:
+            for i in range(position[0]+1,board.dimension):
+                new_position = (i, position[1])
+                if board.state[new_position[0]][new_position[1]].is_empty():
+                    moves.append(Move(position, new_position, board))
+        return moves
 
 
 
