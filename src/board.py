@@ -33,8 +33,8 @@ class Board():
     def makeMove(self, move, swap=True):
         self.state[move.start_row][move.start_col] = Empty_Space()
         self.state[move.end_row][move.end_col] = move.piece_moved
+        move.piece_moved.set_as_moved()
         if move.piece_moved.is_king():
-            print("King moved", move.piece_moved)
             self.king_locations[self.turn] = (move.end_row, move.end_col)
         self.move_log.append(move)
 

@@ -108,6 +108,7 @@ class Piece():
         self.player = player
         self.image = image
         self.square_size = square_size
+        self.moved = False
         
 
     def draw(self, screen, square_size, position):
@@ -127,6 +128,9 @@ class Piece():
 
     def is_pawn(self):
         return False
+
+    def set_as_moved(self):
+        self.moved = True
 
 
 class Knight(Piece):
@@ -155,7 +159,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.rules = [CombinedSlide([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]) ]
+        self.rules = [CombinedSlide([SingleSlide(0,-1), SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]) ]
         super().__init__(player, image)
     
     def is_pawn(self):
@@ -163,6 +167,10 @@ class Pawn(Piece):
 
     def __str__(self):
         return "Pawn"
+
+    def set_as_moved(self):
+        self.rules = [CombinedSlide([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]) ]
+        super().set_as_moved()
 
 
 
