@@ -32,36 +32,30 @@ class Board():
         
 
     def makeMove(self, move, simulation=False):
+        
         self.state[move.start_row][move.start_col] = Empty_Space()
         self.state[move.end_row][move.end_col] = move.piece_moved
+        self.move_log.append(move)
         
         if move.piece_moved.is_king():
             self.king_locations[self.turn] = (move.end_row, move.end_col)
-        self.move_log.append(move)
+        
 
         if move.is_pawn_promotion:
-            if self.turn == 1:
-                self.state[move.end_row][move.end_col] = self.pieces["wQ"]
-            else:
-                self.state[move.end_row][move.end_col] = self.pieces["bQ"]
+            self.promote(move)
             
         if not simulation:
-            if self.en_passant_squares != []:
-                en_passant_square = self.en_passant_squares.pop()
-                if self.state[en_passant_square[0]][en_passant_square[1]].is_en_passant():
-                    self.state[en_passant_square[0]][en_passant_square[1]] = Empty_Space()
+            self.delete_en_passant_squares()
             if move.is_double_pawn_forward:
-                if self.turn == 1:
-                    between_row = move.end_row+1
-                else:
-                    between_row = move.end_row-1
-                self.state[between_row][move.end_col] = EnPassantSquare()
-                self.en_passant_squares.append((between_row, move.end_col))
+                self.create_en_passant_square(move)
             move.piece_moved.set_as_moved()
-            if self.turn == 1:
-                self.turn = 2
-            else:
-                self.turn = 1
+            self.swap_turns()
+
+    def swap_turns(self):
+        if self.turn == 1:
+            self.turn = 2
+        else:
+            self.turn = 1
 
     def get_all_possible_moves(self, player):
         moves = []
@@ -105,6 +99,7 @@ class Board():
             self.turn = 2
         else:
             self.turn = 1
+
     def square_under_attack(self, position):
         for player in range(1, self.player_num+1):
             if player != self.turn:
@@ -113,6 +108,26 @@ class Board():
                     if move.end_row == position[0] and move.end_col == position[1]:
                         return True
         return False
+
+    def delete_en_passant_squares(self):
+        if self.en_passant_squares != []:
+            en_passant_square = self.en_passant_squares.pop()
+            if self.state[en_passant_square[0]][en_passant_square[1]].is_en_passant():
+                self.state[en_passant_square[0]][en_passant_square[1]] = Empty_Space()
+
+    def create_en_passant_square(self, move):
+        if self.turn == 1:
+            between_row = move.end_row+1
+        else:
+            between_row = move.end_row-1
+        self.state[between_row][move.end_col] = EnPassantSquare()
+        self.en_passant_squares.append((between_row, move.end_col))
+
+    def promote(self, move):
+        if self.turn == 1:
+            self.state[move.end_row][move.end_col] = self.pieces["wQ"]
+        else:
+            self.state[move.end_row][move.end_col] = self.pieces["bQ"]
 
             
 

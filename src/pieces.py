@@ -1,5 +1,5 @@
 import pygame as p
-from rules import CombinedSlidingAttack, CombinedSlide, EnPassant, SingleSlide, JumpAttack, Jump, RuleStarAttacks, RuleStar
+from rules import CombinedSlidingAttack, CombinedSlide, EnPassant, SingleSlide, JumpAttack, Jump, RuleStarAttacks, RuleStar, Castling
 
 
 
@@ -87,12 +87,18 @@ class Pawn(Piece):
 
 class King(Piece):
     def __init__(self, player, image):
-        self.rules = [CombinedSlide([SingleSlide(0,-1)]), CombinedSlide([SingleSlide(1,-1)]), CombinedSlide([SingleSlide(-1,-1)]), CombinedSlide([SingleSlide(1,0)]), CombinedSlide([SingleSlide(-1,0)]), CombinedSlide([SingleSlide(0,1)]), CombinedSlide([SingleSlide(1,1)]), CombinedSlide([SingleSlide(-1,-1)])]
+        self.rules = [Castling(), CombinedSlide([SingleSlide(0,-1)]), CombinedSlide([SingleSlide(1,-1)]), CombinedSlide([SingleSlide(-1,-1)]), CombinedSlide([SingleSlide(1,0)]), CombinedSlide([SingleSlide(-1,0)]), CombinedSlide([SingleSlide(0,1)]), CombinedSlide([SingleSlide(1,1)]), CombinedSlide([SingleSlide(-1,-1)])]
         self.rules.extend([CombinedSlidingAttack([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]), CombinedSlidingAttack([SingleSlide(1,0)]), CombinedSlidingAttack([SingleSlide(-1,0)]), CombinedSlidingAttack([SingleSlide(0,1)]), CombinedSlidingAttack([SingleSlide(1,1)]), CombinedSlidingAttack([SingleSlide(-1,-1)])])
+        self.rules_after_moved = self.rules
+        self.rules_after_moved.remove(0)
         super().__init__(player, image)
 
     def is_king(self):
         return True
+
+    def set_as_moved(self):
+        self.rules = self.rules_after_moved
+        super().set_as_moved()
 
 class Empty_Space(Piece):
     def __init__(self):
