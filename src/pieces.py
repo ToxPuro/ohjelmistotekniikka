@@ -2,10 +2,10 @@ import pygame as p
 from move import Move
 
 class Rule():
-    def get_move(self, player, position, board):
-        move = self.generate_moves(player, position, board)
-        if self.check(move, board):
-            return move
+    def get_moves(self, player, position, board):
+        moves = self.generate_moves(player, position, board)
+        if self.check(moves, board):
+            return moves
         return []
 
     def check(self, move, board):
@@ -107,7 +107,10 @@ class Piece():
         screen.blit(self.image, p.Rect(position[1]*square_size, position[0]*square_size, square_size, square_size))
 
     def get_moves(self, position, board):
-        return []
+        result = []
+        for rule in self.rules:
+            result.extend(rule.get_moves(self.player, position, board))
+        return result
 
     def is_empty(self):
         False
@@ -115,35 +118,36 @@ class Piece():
 
 class Knight(Piece):
     def __init__(self, player, image):
+        self.rules = [Jump(1,-2), Jump(-1,-2), Jump(1,2), Jump(-1,2)]
         super().__init__(player, image)
 
 class Rook(Piece):
     def __init__(self, player, image):
+        self.rules = [RuleStar(SingleSlide(0,1)), RuleStar(SingleSlide(0,-1)), RuleStar(SingleSlide(1,0)), RuleStar(SingleSlide(-1,0))]
         super().__init__(player, image)
 
 class Queen(Piece):
     def __init__(self, player, image):
+        self.rules = [RuleStar(SingleSlide(0,1)), RuleStar(SingleSlide(0,-1)), RuleStar(SingleSlide(1,0)), RuleStar(SingleSlide(-1,0)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
         super().__init__(player, image)
 
 class Bishop(Piece):
     def __init__(self, player, image):
+        self.rules = [RuleStar(SingleSlide(1,-1)), RuleStar(SingleSlide(-1,-1)), RuleStar(SingleSlide(1,1)), RuleStar(SingleSlide(-1,1))]
         super().__init__(player, image)
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.moves = [RuleStar(SingleSlide(0,-1))]
+        self.rules = [SingleSlide(0,-1)]
         super().__init__(player, image)
 
-    def get_moves(self, position, board):
-        result = []
-        for move in self.moves:
-            result.extend(move.get_move(self.player, position, board))
-        return result
+
 
 
 
 class King(Piece):
     def __init__(self, player, image):
+        self.rules = [SingleSlide(0,-1)]
         super().__init__(player, image)
 
 class Empty_Space(Piece):
@@ -155,5 +159,8 @@ class Empty_Space(Piece):
 
     def is_empty(self):
         return True
+
+    def get_moves(self, position, board):
+        return []
 
 
