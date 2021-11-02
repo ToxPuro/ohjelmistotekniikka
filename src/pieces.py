@@ -47,17 +47,6 @@ class CombinedSlide(Rule):
             position = new_position
         return new_positions
 
-
-class JoinedRule():
-    def __init__(self, rules):
-        self.rules = rules
-    
-    def generate_positions(self, player, position, board):
-        new_positions = []
-        for rule in self.rules:
-            new_positions.extend(rule.generate_positions(player, position, board))
-        return new_positions
-
 class Jump(Rule):
     def __init__(self, x_hop, y_hop):
         self.x_hop = x_hop
@@ -67,6 +56,18 @@ class Jump(Rule):
         new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
         if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
             if board.state[new_position[0]][new_position[1]].is_empty():
+                return [Move(position, new_position ,board)]
+        return []
+
+class JumpAttack(Rule):
+    def __init__(self, x_hop, y_hop):
+        self.x_hop = x_hop
+        self.y_hop = y_hop
+
+    def generate_move(self,player, position, board):
+        new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
+        if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
+            if not board.state[new_position[0]][new_position[1]].is_empty():
                 return [Move(position, new_position ,board)]
         return []
 
@@ -99,18 +100,8 @@ class Left(Rule):
 
 class UpStar(Rule):
     def generate_move(self,player, position, board):
-        moves = []
-        if player==1:
-            for i in range(position[0]-1,-1,-1):
-                new_position = (i, position[1])
-                if board.state[new_position[0]][new_position[1]].is_empty():
-                    moves.append(Move(position, new_position, board))
-        else:
-            for i in range(position[0]-1,-1,-1):
-                new_position = (i, position[1])
-                if board.state[new_position[0]][new_position[1]].is_empty():
-                    moves.append(Move(position, new_position, board))
-        return moves
+        return CombinedSlide([Up() for i in range(board.dimension)]).generate_move(player, position, board)
+
 
 
 
@@ -151,7 +142,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.moves = [CombinedSlidingAttack([Up(), Up(), Left()]),  CombinedSlide([Up(), Up(), Left()])]
+        self.moves = [UpStar()]
         super().__init__(player, image)
 
     def get_moves(self, position, board):
