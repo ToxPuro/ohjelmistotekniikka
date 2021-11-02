@@ -1,45 +1,44 @@
 import pygame as p
 
 class Piece():
-    def __init__(self, player, image, position, square_size=64):
+    def __init__(self, player, image, square_size=64):
         self.player = player
         self.image = image
-        self.position = position
         self.square_size = square_size
 
-    def draw(self, screen):
-        screen.blit(self.image, p.Rect(self.position["column"]*self.square_size, self.position["row"]*self.square_size, self.square_size, self.square_size))
+    def draw(self, screen, square_size, position):
+        screen.blit(self.image, p.Rect(position[1]*square_size, position[0]*square_size, square_size, square_size))
 
 
 class Knight(Piece):
-    def __init__(self, player, image, position):
-        super().__init__(player, image, position)
+    def __init__(self, player, image):
+        super().__init__(player, image)
 
 class Rook(Piece):
-    def __init__(self, player, image, position):
-        super().__init__(player, image, position)
+    def __init__(self, player, image):
+        super().__init__(player, image)
 
 class Queen(Piece):
-    def __init__(self, player, image, position):
-        super().__init__(player, image, position)
+    def __init__(self, player, image):
+        super().__init__(player, image)
 
 class Bishop(Piece):
-    def __init__(self, player, image, position):
-        super().__init__(player, image, position)
+    def __init__(self, player, image):
+        super().__init__(player, image)
 
 class Pawn(Piece):
-    def __init__(self, player, image, position):
-        super().__init__(player, image, position)
+    def __init__(self, player, image):
+        super().__init__(player, image)
 
 class King(Piece):
-    def __init__(self, player, image, position):
-        super().__init__(player, image, position)
+    def __init__(self, player, image):
+        super().__init__(player, image)
 
 class Empty_Space(Piece):
-    def __init__(self, position):
-        self.position = position
+    def __init__(self):
+        pass
 
-    def draw(self, screen):
+    def draw(self, screen, square_size, position):
         pass
 
 
