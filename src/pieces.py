@@ -11,15 +11,44 @@ class Rule():
     def check(self, move, board):
         return True
 
+class JoinedRule():
+    def __init__(self, rules):
+        self.rules = rules
+    
+    def generate_positions(self, player, position, board):
+        new_positions = []
+        for rule in self.rules:
+            new_positions.extend(rule.generate_positions(player, position, board))
+        return new_positions
+
+class Jump(Rule):
+    def __init__(self, x_hop, y_hop):
+        self.x_hop = x_hop
+        self.y_hop = y_hop
+
+    def generate_move(self,player, position, board):
+        new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
+        if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
+            if board.state[new_position[0]][new_position[1]].is_empty():
+                return [Move(position, new_position ,board)]
+        return []
+
+
+    
+
+
 class Up(Rule):
     def generate_move(self,player, position, board):
-        if player==1:
-            new_position = (position[0]-1, position[1])
-        else:
-            new_position = (position[0]+1, position[1])
+        new_position = self.generate_positions(player, position, board)[0]
         if board.state[new_position[0]][new_position[1]].is_empty():
             return [Move(position, new_position ,board)]
         return []
+
+    def generate_positions(self, player, position, board):
+        if player==1:
+            return [(position[0]-1, position[1])]
+        else:
+            return  [(position[0]+1, position[1])]
 
 class UpStar(Rule):
     def generate_move(self,player, position, board):
@@ -30,7 +59,7 @@ class UpStar(Rule):
                 if board.state[new_position[0]][new_position[1]].is_empty():
                     moves.append(Move(position, new_position, board))
         else:
-            for i in range(position[0]+1,board.dimension):
+            for i in range(position[0]-1,-1,-1):
                 new_position = (i, position[1])
                 if board.state[new_position[0]][new_position[1]].is_empty():
                     moves.append(Move(position, new_position, board))
@@ -75,7 +104,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     def __init__(self, player, image):
-        self.moves = [UpStar()]
+        self.moves = [Jump(1,-1)]
         super().__init__(player, image)
 
     def get_moves(self, position, board):
