@@ -63,13 +63,17 @@ def main():
                     player_clicks.append(selected_square)
                 if len(player_clicks) == 2:
                     move = Move(player_clicks[0], player_clicks[1], board)
+                    print(move)
                     if move in valid_moves:
+                        move_made = True
                         board.makeMove(move)
-                        selected_square = ()
-                        player_clicks = []
+                    selected_square = ()
+                    player_clicks = []
         
         if move_made:
             valid_moves = board.get_all_valid_moves()
+            for move in valid_moves:
+                print(move)
             move_made = False
         
         board.drawGameState(screen)

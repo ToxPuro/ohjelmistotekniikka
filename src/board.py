@@ -1,4 +1,5 @@
 from pieces import Empty_Space
+from move import Move
 import pygame as p
 
 class Board():
@@ -30,12 +31,16 @@ class Board():
         self.state[move.end_row][move.end_col] = move.piece_moved
 
     def get_all_possible_moves(self):
-        moves = [Move((6,4), (4,4), self)]
+        moves = []
         for row in range(len(self.state)):
             for col in range(len(self.state[row])):
                 piece = self.state[row][col]
                 if self.turn == piece.player:
-                    piece_moves = piece.get_moves()
+                    piece_moves = piece.get_moves((row, col), self)
+                    if piece_moves != []:
+                        for move in piece_moves:
+                            print(f"piece move {move}")
+                    moves.extend(piece_moves)
         return moves
 
     def get_all_valid_moves(self):
@@ -43,17 +48,4 @@ class Board():
 
 
 
-class Move():
-    def __init__(self, startSq, endSq, board):
-        self.start_row = startSq[0]
-        self.start_col = startSq[1]
-        self.end_row = endSq[0]
-        self.end_col = endSq[1]
-        self.piece_moved = board.state[self.start_row][self.start_col]
-        self.piece_captured = board.state[self.end_row][self.end_col]
 
-    def __eq__(self, other):
-        if not isinstance(other, Move):
-            return False
-        
-        return other.start_row == self.start_row and other.start_col == self.start_col and other.end_row == self.end_row and self.end_col == other.end_col
