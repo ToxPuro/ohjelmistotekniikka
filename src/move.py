@@ -1,11 +1,20 @@
 class Move():
-    def __init__(self, startSq, endSq, board, double_pawn_forward = False):
+    def __init__(self, startSq, endSq, board):
         self.start_row = startSq[0]
         self.start_col = startSq[1]
         self.end_row = endSq[0]
         self.end_col = endSq[1]
         self.piece_moved = board.state[self.start_row][self.start_col]
         self.piece_captured = board.state[self.end_row][self.end_col]
+
+
+        self.is_double_pawn_forward = False
+        if self.piece_moved.is_pawn():
+            between_row = max(self.start_row, self.end_row) - min(self.start_row, self.end_row)
+            if between_row > 1:
+                self.is_double_pawn_forward = True
+
+
 
         self.is_pawn_promotion = False
         if self.piece_moved.is_pawn() and (self.end_row == 0 or self.end_row == 7):

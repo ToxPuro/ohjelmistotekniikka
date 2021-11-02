@@ -1,4 +1,4 @@
-from pieces import Empty_Space, Queen
+from pieces import Empty_Space, EnPassantSquare, Queen
 from move import Move
 import pygame as p
 
@@ -12,6 +12,7 @@ class Board():
         self.player_num = player_num
         self.move_log = []
         self.pieces = pieces
+        self.en_passant_squares = []
     
     def drawGameState(self, screen):
         self.drawSquares(screen)
@@ -45,6 +46,17 @@ class Board():
                 self.state[move.end_row][move.end_col] = self.pieces["bQ"]
             
         if not simulation:
+            if self.en_passant_squares != []:
+                en_passant_square = self.en_passant_squares.pop()
+                if self.state[en_passant_square[0]][en_passant_square[1]].is_en_passant():
+                    self.state[en_passant_square[0]][en_passant_square[1]] = Empty_Space()
+            if move.is_double_pawn_forward:
+                if self.turn == 1:
+                    between_row = move.end_row+1
+                else:
+                    between_row = move.end_row-1
+                self.state[between_row][move.end_col] = EnPassantSquare()
+                self.en_passant_squares.append((between_row, move.end_col))
             move.piece_moved.set_as_moved()
             if self.turn == 1:
                 self.turn = 2
