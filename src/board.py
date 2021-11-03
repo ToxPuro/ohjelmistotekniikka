@@ -153,7 +153,7 @@ class Board():
             self.state[row][col] = SelectedSlideSquare(index)
             self.selected.append((row, col, index))
         else:
-            self.selected.remove((row, col))
+            self.selected.remove((row, col, index))
             self.state[row][col] = Empty_Space()
 
         
