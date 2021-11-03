@@ -125,4 +125,13 @@ class SelectedJumpSquare(Piece):
     def draw(self, screen, square_size, position):
         p.draw.rect(screen, p.Color("green"), p.Rect(position[1]*square_size, position[0]*square_size, square_size, square_size))
 
+class SelectedSlideSquare(Piece):
+    def __init__(self, num):
+        self.num = num
+    
+    def draw(self, screen, square_size, position):
+        p.draw.rect(screen, p.Color("red"), p.Rect(position[1]*square_size, position[0]*square_size, square_size, square_size))
+        smallfont = p.font.SysFont('Corbel',35)
+        text = smallfont.render(f"{self.num}" , True , p.Color("black"))
+        screen.blit(text, p.Rect(position[1]*square_size, position[0]*square_size, square_size, square_size))
 

@@ -1,6 +1,6 @@
 import pygame as p
 from board import Board, Move
-from rules import Jump, JumpAttack
+from rules import CombinedSlide, Jump, JumpAttack, SingleSlide
 import pygame_menu
 
 WIDHT = HEIGHT = 512
@@ -118,6 +118,25 @@ def save_jump_piece(board, gs):
     gs.set_extra_rules(rules)
     return gs
 
+def save_sliding_piece(board, index, gs):
+    rules = []
+    for i in range(1, index+1):
+        index_rules = []
+        index_coordinates = [x for x in board.selected if x[2] == i]
+        current_coordinates = (3,3)
+        while index_coordinates != []:
+            if (current_coordinates[0], current_coordinates[1]+1, i) in index_coordinates:
+                index_rules.append(SingleSlide(1,0))
+                current_coordinates = (current_coordinates[0], current_coordinates[1]+1)
+                index_coordinates.remove((current_coordinates[0], current_coordinates[1], i))
+            if (current_coordinates[0]-1, current_coordinates[1], i) in index_coordinates:
+                index_rules.append(SingleSlide(0,-1))
+                current_coordinates = (current_coordinates[0]-1, current_coordinates[1])
+                index_coordinates.remove((current_coordinates[0], current_coordinates[1], i))
+        rules.append(CombinedSlide(index_rules))
+    gs.set_extra_rules(rules)
+    return gs
+
 
 def create_piece():
     screen = p.display.set_mode((WIDHT, HEIGHT))
@@ -126,7 +145,7 @@ def create_piece():
     smallfont = p.font.SysFont('Corbel',35)
     color = (255,255,255)
     text = smallfont.render('Back' , True , color)
-    
+    index = 1
     slider = True
     status_str = "Slider" if slider else "Jumper"
     status_text = smallfont.render(status_str, True, color)
@@ -153,10 +172,16 @@ def create_piece():
                 elif WIDHT-140 <= location[0] <= WIDHT and 40<location[1]<=80:
                     slider = not slider
                     status_str = "Slider" if slider else "Jumper"
+                    index = 1
                     status_text = smallfont.render(status_str, True, color)
+                    board = Board(initial_state, pieces)
+                    gs = GameState()
 
                 elif WIDHT-140 <= location[0] <= WIDHT and 80<location[1]<=120:
-                    gs = save_jump_piece(board, gs)
+                    if not slider:
+                        gs = save_jump_piece(board, gs)
+                    else:
+                        gs = save_sliding_piece(board, index, gs)
 
                 elif WIDHT-140 <= location[0] <= WIDHT and 120<location[1]<=160:
                     start_the_game(gs)
@@ -164,7 +189,13 @@ def create_piece():
                 else:
                     col = location[0]//SQ_SIZE
                     row = location[1]//SQ_SIZE
-                    board.set_as_selected(row, col)
+                    if slider:
+                        if col == 3 and row == 3:
+                            index = index+1
+                        else:
+                            board.set_slide_selected(row, col, index)
+                    else:
+                        board.set_jump_selected(row, col)
                     if selected_square == (row, col):
                         selected_square = ()
                         player_clicks = []

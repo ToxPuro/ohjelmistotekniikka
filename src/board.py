@@ -1,4 +1,4 @@
-from pieces import Empty_Space, EnPassantSquare, Queen, SelectedJumpSquare
+from pieces import Empty_Space, EnPassantSquare, Queen, SelectedJumpSquare, SelectedSlideSquare
 from move import Move
 import pygame as p
 
@@ -140,10 +140,18 @@ class Board():
         else:
             self.state[move.end_row][move.end_col] = self.pieces["bQ"]
 
-    def set_as_selected(self, row, col):
+    def set_jump_selected(self, row, col):
         if self.state[row][col].is_empty():
             self.state[row][col] = SelectedJumpSquare()
             self.selected.append((row, col))
+        else:
+            self.selected.remove((row, col))
+            self.state[row][col] = Empty_Space()
+
+    def set_slide_selected(self, row, col, index):
+        if self.state[row][col].is_empty():
+            self.state[row][col] = SelectedSlideSquare(index)
+            self.selected.append((row, col, index))
         else:
             self.selected.remove((row, col))
             self.state[row][col] = Empty_Space()
