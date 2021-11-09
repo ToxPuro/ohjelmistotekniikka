@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ohjelmistotekniikka"
+version = "0.1.0"
+description = "Project for university course Ohjelmistotekniikka"
+authors = ["Touko Puro"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pygame = "^2.0.3"
+pygame-menu = "^4.1.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

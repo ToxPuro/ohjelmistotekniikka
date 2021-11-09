@@ -1,0 +1,133 @@
+commit 2853a63f19fcef983a11bc6c42d7541bcf573d59
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:20:10 2021 +0200
+
+    changes
+
+ tiedostoja/file2             | 0
+ tiedostoja/{file1 => file22} | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 3bcb2a3dc4a115475505f729ef6f03cca6e17431
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:18:28 2021 +0200
+
+    added files
+
+ tiedostoja/file1 | 0
+ tiedostoja/file2 | 0
+ tiedostoja/file3 | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 58eb38b5e9f7bf46885418675a9ccbbe00340048
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:15:53 2021 +0200
+
+    patch change
+
+ eka.txt    | 4 +++-
+ kolmas.txt | 3 ++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+commit 538515c79b589062182330d0d833d224f406c86c
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:14:37 2021 +0200
+
+    renamed tiedosto to eka
+
+ tiedosto.txt => eka.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit ac4374b9ca87d804b793400d309c8a7a56d3e247
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:13:57 2021 +0200
+
+    removed toinen.txt
+
+ toinen.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit d998611673a9630866335ef62f73c3689110aae1
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:13:32 2021 +0200
+
+    Revert "remove tiedosto.txt"
+    
+    This reverts commit 83535ca7284a76fae184693e1845a522d7386296.
+
+ tiedosto.txt | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+commit 83535ca7284a76fae184693e1845a522d7386296
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:12:35 2021 +0200
+
+    remove tiedosto.txt
+
+ tiedosto.txt | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+commit 1b404fe18e7a352a5351b8059d0107468fcb21cf
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:12:04 2021 +0200
+
+    lorem ipsum changed
+
+ tiedosto.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit 3390370f407ff79c7ba5424696f4f97c9c9a2adb
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:11:02 2021 +0200
+
+    lorem ipsum
+
+ tiedosto.txt | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+commit 7be38ca66439cb25c0c785d764604206ea10cf10
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:05:56 2021 +0200
+
+    stuff directory
+
+ stuff/stuff.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit f6594882a85857ab62c5a3c909dc49c3daaff099
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:05:27 2021 +0200
+
+    changed toinen and kolmas
+
+ kolmas.txt | 1 +
+ toinen.txt | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit 8389d46aefa953a3ad3e3daef8e5d31d3d60c0bf
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:04:57 2021 +0200
+
+    kolmas.txt
+
+ kolmas.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 6185a21598a49899854c2cf085b9ed5ac3a952fe
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:04:31 2021 +0200
+
+    muutos ja lisäys
+
+ tiedosto.txt | 1 +
+ toinen.txt   | 0
+ 2 files changed, 1 insertion(+)
+
+commit 040b6c7a4216089351fa92a63ff6109c0c13f705
+Author: toxpuro <puro.touko@gmail.com>
+Date:   Tue Nov 9 12:03:40 2021 +0200
+
+    tiedosto.txt luotu
+
+ tiedosto.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
