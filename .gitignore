@@ -9,3 +9,4 @@ laskarit/viikko2/unicafe/src/__pycache__/
 src/tests/__pycache__/
 poetry
 **/__pycache__
+.pytest_cache
