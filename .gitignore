@@ -8,4 +8,4 @@ laskarit/viikko2/unicafe/src/__pycache__/
 .coverage
 src/tests/__pycache__/
 poetry
-__pycache__/
+**/__pycache__
