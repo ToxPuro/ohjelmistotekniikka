@@ -116,3 +116,10 @@ class TestRuleReader(unittest.TestCase):
         self.assertEqual(isinstance(rule, RuleStarAttacks), True)
         self.assertEqual(isinstance(rule.rule, SingleSlide), True)
         self.assertEqual((rule.rule.x_increment, rule.rule.y_increment), (0,-1))
+
+    def test_incorrect_json_does_not_work(self):
+        json = {
+            "type": "marshall"
+        }
+        rule = self.rule_reader.json_to_rule(json)
+        self.assertEqual(rule, "incorrect type")

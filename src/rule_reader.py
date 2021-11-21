@@ -6,22 +6,23 @@ class RuleReader():
         if json["type"] == "single_slide":
             return SingleSlide(json["x_increment"], json["y_increment"])
 
-        if json["type"] == "jump":
+        elif json["type"] == "jump":
             return Jump(json["x_hop"], json["y_hop"])
 
-        if json["type"] == "jump_attack":
+        elif json["type"] == "jump_attack":
             return JumpAttack(json["x_hop"], json["y_hop"])
 
-        if json["type"] == "combined_slide":
+        elif json["type"] == "combined_slide":
             return CombinedSlide([self.json_to_rule(rule) for rule in json["rules"]])
 
-        if json["type"] == "combined_slide_attack":
+        elif json["type"] == "combined_slide_attack":
             return CombinedSlidingAttack([self.json_to_rule(rule) for rule in json["rules"]])
 
-        if json["type"] == "RuleStar":
+        elif json["type"] == "RuleStar":
             return RuleStar(self.json_to_rule(json["rule"]))
 
-        if json["type"] == "RuleStarAttacks":
+        elif json["type"] == "RuleStarAttacks":
             return RuleStarAttacks(self.json_to_rule(json["rule"]))
         
+        return "incorrect type"
 
