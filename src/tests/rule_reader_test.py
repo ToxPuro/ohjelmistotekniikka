@@ -7,6 +7,14 @@ class TestRuleReader(unittest.TestCase):
         self.rule_reader = RuleReader()
 
     
+    def test_incorrect_json_does_not_work(self):
+        json = {
+            "type": "marshall"
+        }
+        rule = self.rule_reader.json_to_rule(json)
+        self.assertEqual(rule, "incorrect type")
+
+    
     def test_reads_combined_sliding_attack_correct(self):
         json = {
             "type": "combined_slide_attack",
@@ -117,9 +125,3 @@ class TestRuleReader(unittest.TestCase):
         self.assertEqual(isinstance(rule.rule, SingleSlide), True)
         self.assertEqual((rule.rule.x_increment, rule.rule.y_increment), (0,-1))
 
-    def test_incorrect_json_does_not_work(self):
-        json = {
-            "type": "marshall"
-        }
-        rule = self.rule_reader.json_to_rule(json)
-        self.assertEqual(rule, "incorrect type")
