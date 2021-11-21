@@ -14,8 +14,8 @@ class GameState():
     def __init__(self):
         self.extra_rules = []
 
-    def set_extra_rules(self, rules):
-        self.extra_rules = rules
+    def add_extra_rules(self, rules):
+        self.extra_rules.append(rules)
 
 def generate_initial_state(gs):
     load_images()
@@ -33,8 +33,8 @@ def generate_initial_state(gs):
 
     if gs.extra_rules != []:
         for rule in gs.extra_rules:
-            print(rule)
-        initial_state[6] = [Piece(1, IMAGES["wR"], gs.extra_rules) for i in range(8)]
+            initial_state[6] = [Piece(1, IMAGES["wR"], rule) for i in range(8)]
+        
 
     return initial_state, pieces
 
@@ -115,7 +115,7 @@ def save_jump_piece(board, gs):
         rules.append(Jump(selected_square[1]-3, selected_square[0]-3))
         print(selected_square[1]-3, selected_square[0]-3)
         rules.append(JumpAttack(selected_square[1]-3, selected_square[0]-3))
-    gs.set_extra_rules(rules)
+    gs.add_extra_rules(rules)
     return gs
 
 def save_sliding_piece(board, index, gs):
@@ -134,7 +134,7 @@ def save_sliding_piece(board, index, gs):
                 current_coordinates = (current_coordinates[0]-1, current_coordinates[1])
                 index_coordinates.remove((current_coordinates[0], current_coordinates[1], i))
         rules.append(CombinedSlide(index_rules))
-    gs.set_extra_rules(rules)
+    gs.add_extra_rules(rules)
     return gs
 
 
