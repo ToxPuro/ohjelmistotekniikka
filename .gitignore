@@ -7,3 +7,5 @@ laskarit/viikko2/unicafe/src/__pycache__/
 .env
 .coverage
 src/tests/__pycache__/
+poetry
+__pycache__/
