@@ -4,13 +4,13 @@ class RuleReader():
 
     def json_to_rule(self,json):
         if json["type"] == "single_slide":
-            return SingleSlide(json["x_increment", "y_increment"])
+            return SingleSlide(json["x_increment"], json["y_increment"])
 
         if json["type"] == "jump":
-            return Jump(json["x_hop", "y_hop"])
+            return Jump(json["x_hop"], json["y_hop"])
 
         if json["type"] == "jump_attack":
-            return JumpAttack(json["x_hop", "y_hop"])
+            return JumpAttack(json["x_hop"], json["y_hop"])
 
         if json["type"] == "combined_slide":
             return CombinedSlide([self.json_to_rule(rule) for rule in json["rules"]])
