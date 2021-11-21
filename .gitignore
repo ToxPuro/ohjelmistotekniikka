@@ -10,3 +10,4 @@ src/tests/__pycache__/
 poetry
 **/__pycache__
 .pytest_cache
+htmlcov
