@@ -32,7 +32,7 @@ class CombinedSlidingAttack(Rule):
 
     def to_json(self):
         return {
-            "type": "combined_slide",
+            "type": "combined_slide_attack",
             "slides": [rule.to_json() for rule in self.rules]
         }
 
@@ -45,14 +45,14 @@ class CombinedSlide(Rule):
         for rule in self.rules:
             new_position = rule.generate_positions(player, position, board, piece)[0]
             if not board.state[new_position[0]][new_position[1]].is_empty():
-                break
+                return new_positions
             new_positions.append(new_position)
             position = new_position
         return new_positions
 
     def to_json(self):
         return {
-            "type": "combined_slide_attack",
+            "type": "combined_slide",
             "slides": [rule.to_json() for rule in self.rules]
         }
 

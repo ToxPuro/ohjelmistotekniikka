@@ -13,10 +13,10 @@ class RuleReader():
             return JumpAttack(json["x_hop"], json["y_hop"])
 
         elif json["type"] == "combined_slide":
-            return CombinedSlide([self.json_to_rule(rule) for rule in json["rules"]])
+            return CombinedSlide([self.json_to_rule(rule) for rule in json["slides"]])
 
         elif json["type"] == "combined_slide_attack":
-            return CombinedSlidingAttack([self.json_to_rule(rule) for rule in json["rules"]])
+            return CombinedSlidingAttack([self.json_to_rule(rule) for rule in json["slides"]])
 
         elif json["type"] == "RuleStar":
             return RuleStar(self.json_to_rule(json["rule"]))

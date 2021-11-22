@@ -21,6 +21,7 @@ class GameState():
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
         self.index=1
+        self.saved = []
         self.flash_box = None
         self.pieces = {"bR": lambda: Rook(2, IMAGES["bR"]), "bN": lambda: Knight(2, IMAGES["bN"]), "bB": lambda: Bishop(2, IMAGES["bB"]) , "bQ": lambda: Queen(2, IMAGES["bQ"]) ,"bK": lambda: King(2, IMAGES["bK"]),
                         "wR": lambda: Rook(1, IMAGES["wR"]), "wN": lambda: Knight(1, IMAGES["wN"]), "wB": lambda: Bishop(1, IMAGES["wB"]) , "wQ": lambda: Queen(1, IMAGES["wQ"]) ,"wK": lambda: King(1, IMAGES["wK"]),
@@ -31,7 +32,6 @@ class GameState():
         self.time = 0
 
     def set_current_piece(self, rules):
-        
 
         is_king = (self.current_piece == 5)
 
@@ -43,16 +43,17 @@ class GameState():
         self.piece_created = Piece(1, IMAGES[white_piece_name], rules, is_king)
 
 
-    def add_extra_rules(self, rules):
-        self.extra_rules.append(rules)
-
-
     def flip_slider(self):
         self.slider = not self.slider
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
-        self.extra_rules = None
+        self.piece_created = None
         self.index = 1
+
+    def increase_index(self):
+        self.index += 1
+        self.saved.extend(self.board.selected)
+        self.board.delete_old_selected_squares()
 
     def get_piece_name_from_index(self, index):
         index_to_pieces = {
@@ -96,10 +97,6 @@ def generate_initial_state(gs):
             [gs.pieces["wp"]() for i in range(8)],
             [gs.pieces["wR"](), gs.pieces["wN"](), gs.pieces["wB"](), gs.pieces["wQ"](), gs.pieces["wK"](), gs.pieces["wB"](), gs.pieces["wN"](), gs.pieces["wR"]()]
         ]
-
-    if gs.extra_rules != []:
-        for rule in gs.extra_rules:
-            initial_state[6] = [Piece(1, IMAGES["wR"], rule) for i in range(8)]
         
 
     return initial_state, pieces
@@ -125,7 +122,7 @@ def generate_initial_state2():
 def load_images():
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load(f"./images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load(f"../images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
 
 
 def start_the_game(gs=None):
@@ -192,21 +189,35 @@ def save_jump_piece(gs):
 
 def save_sliding_piece(gs):
     rules = []
+    gs.increase_index()
+    gs.index = 1
     for i in range(1, gs.index+1):
         index_rules = []
-        index_coordinates = [x for x in gs.board.selected if x[2] == i]
+        
+        index_coordinates = [x for x in gs.saved if x[2] == i]
         current_coordinates = (3,3)
         while index_coordinates != []:
-            if (current_coordinates[0], current_coordinates[1]+1, i) in index_coordinates:
-                index_rules.append(SingleSlide(1,0))
-                current_coordinates = (current_coordinates[0], current_coordinates[1]+1)
-                index_coordinates.remove((current_coordinates[0], current_coordinates[1], i))
-            if (current_coordinates[0]-1, current_coordinates[1], i) in index_coordinates:
-                index_rules.append(SingleSlide(0,-1))
-                current_coordinates = (current_coordinates[0]-1, current_coordinates[1])
-                index_coordinates.remove((current_coordinates[0], current_coordinates[1], i))
+            new_coordinates = [
+                (current_coordinates[0]+1, current_coordinates[1], i),
+                (current_coordinates[0]-1, current_coordinates[1], i),
+                (current_coordinates[0], current_coordinates[1]+1, i),
+                (current_coordinates[0], current_coordinates[1]-1, i),
+                (current_coordinates[0]-1, current_coordinates[1]-1, i),
+                (current_coordinates[0]+1, current_coordinates[1]-1, i),
+                (current_coordinates[0]-1, current_coordinates[1]+1, i),
+                (current_coordinates[0]+1, current_coordinates[1]+1, i),
+                ]
+
+            for coordinate in new_coordinates:
+                if coordinate in index_coordinates:
+                    difference = (coordinate[0] - current_coordinates[0] , coordinate[1] - current_coordinates[1] )
+                    current_coordinates = (coordinate[0], coordinate[1])
+                    index_rules.append(SingleSlide(difference[1], difference[0]))
+                    index_coordinates.remove(coordinate)
+                    break
+        
         rules.append(CombinedSlide(index_rules))
-    gs.add_extra_rules(rules)
+    gs.set_current_piece(rules)
     return gs
 
 def upload_piece(name, rules):
@@ -222,14 +233,14 @@ def download(screen, gs):
     clock = p.time.Clock()
     done = False
     height = 30
-    boxes = []
+    boxes = [ClickBox(0,0,140,height, lambda: True, text="Back")]
     for i, piece in enumerate(pieces):
         rules = [rule_reader.json_to_rule(rule) for rule in piece["rules"]]
         def fun():
             gs.set_current_piece(rules)
             return True
         
-        boxes.append(ClickBox(0,i*height,140,height, fun, text=piece["name"]))
+        boxes.append(ClickBox(0,(i+1)*height,140,height, fun, text=piece["name"]))
 
     while not done:
         for event in p.event.get():
@@ -247,26 +258,23 @@ def download(screen, gs):
 
 def upload(screen, gs):
     clock = p.time.Clock()
-    input_box1 = InputBox(100, 100, 140, 32)
-    input_boxes = [input_box1]
+    name_box = ClickBox(0, 0, 140, 40, lambda: None, "Name")
+    input_box = InputBox(0, 40, 140, 32)
+    boxes = [input_box, name_box]
+
     done = False
 
     while not done:
         for event in p.event.get():
             if event.type == p.QUIT:
                 done = True
-            for box in input_boxes:
-                name = box.handle_event(event)
-                if name is not None and name != '':
-                    done = True
-                    upload_piece(name, gs.piece_created.rules)
+            name = input_box.handle_event(event)
+            if name is not None and name != '':
+                done = True
+                upload_piece(name, gs.piece_created.rules)
 
-
-        for box in input_boxes:
-            box.update()
-
-        screen.fill((30, 30, 30))
-        for box in input_boxes:
+        input_box.update()
+        for box in boxes:
             box.draw(screen)
 
         p.display.flip()
@@ -311,7 +319,7 @@ def create_piece():
                 row = location[1]//SQ_SIZE
                 if gs.slider:
                     if col == 3 and row == 3:
-                        gs.index = gs.index+1
+                        gs.increase_index()
                     else:
                         gs.board.set_slide_selected(row, col, gs.index)
                 else:

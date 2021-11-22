@@ -19,7 +19,7 @@ class TestRuleReader(unittest.TestCase):
         json = {
             "type": "combined_slide_attack",
         }
-        json["rules"] =  [
+        json["slides"] =  [
                     {
                         "type": "single_slide",
                         "x_increment": 1,
@@ -75,7 +75,7 @@ class TestRuleReader(unittest.TestCase):
         json = {
             "type": "combined_slide",
         }
-        json["rules"] =  [
+        json["slides"] =  [
                     {
                         "type": "single_slide",
                         "x_increment": 1,

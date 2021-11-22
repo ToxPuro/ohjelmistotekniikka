@@ -156,6 +156,11 @@ class Board():
             self.selected.remove((row, col, index))
             self.state[row][col] = Empty_Space()
 
+    def delete_old_selected_squares(self):
+        for square in self.selected:
+            self.state[square[0]][square[1]] = Empty_Space()
+        self.selected = []
+
         
 
             
