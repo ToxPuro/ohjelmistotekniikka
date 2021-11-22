@@ -103,9 +103,11 @@ class GameState():
         }
         return index_to_pieces[index]
 
-    def next_piece(self):
+    def increment_current_piece(self):
         self.current_piece = (1+ self.current_piece) % 6
-        print(self.current_piece)
+    
+    def next_piece(self):
+        self.increment_current_piece()
         next_piece = self.pieces[self.get_piece_name_from_index(self.current_piece)]()
         self.board.state[3][3] = next_piece
 
@@ -305,7 +307,7 @@ def customize_board(gs, screen):
     gs.clear_initial_state()
     initial_state, pieces = generate_initial_state(gs)
     gs.board = Board(initial_state, pieces)
-    box1 = ClickBox(WIDHT-140, 0, 140, 40, lambda: gs.next_piece(), "Next piece")
+    box1 = ClickBox(WIDHT-140, 0, 140, 40, lambda: gs.increment_current_piece(), "Next piece")
     def fun():
         nonlocal done
         done = True
@@ -336,6 +338,9 @@ def customize_board(gs, screen):
         for box in boxes:
             box.draw(screen)
         p.display.flip()
+    
+    initial_state, pieces = generate_initial_state2()
+    gs.board = Board(initial_state, pieces)
     
 
 def create_piece():
