@@ -25,11 +25,28 @@ class GameState():
         self.flash_box = None
         self.pieces = {"bR": lambda: Rook(2, IMAGES["bR"]), "bN": lambda: Knight(2, IMAGES["bN"]), "bB": lambda: Bishop(2, IMAGES["bB"]) , "bQ": lambda: Queen(2, IMAGES["bQ"]) ,"bK": lambda: King(2, IMAGES["bK"]),
                         "wR": lambda: Rook(1, IMAGES["wR"]), "wN": lambda: Knight(1, IMAGES["wN"]), "wB": lambda: Bishop(1, IMAGES["wB"]) , "wQ": lambda: Queen(1, IMAGES["wQ"]) ,"wK": lambda: King(1, IMAGES["wK"]),
-                        "bp": lambda: Pawn(2, IMAGES["bp"]), "wp": lambda: Pawn(1, IMAGES["wp"])
+                        "bp": lambda: Pawn(2, IMAGES["bp"]), "wp": lambda: Pawn(1, IMAGES["wp"]), "empty": lambda: Empty_Space()
                     }
 
         self.current_piece = 0
         self.time = 0
+
+        self.initial_state = [
+            ["bR","bN","bB","bQ","bK","bB","bN","bR"],
+            ["bp" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty"for i in range(8)],
+            ["wp" for i in range(8)],
+            ["wR","wN","wB","wQ","wK","wB","wN","wR"]
+        ]
+
+    def get_initial_state(self):
+        initial_state= []
+        for row in self.initial_state:
+            initial_state.append([self.pieces[piece]()for piece in row])
+        return initial_state
 
     def set_current_piece(self, rules):
 
@@ -54,6 +71,18 @@ class GameState():
         self.index += 1
         self.saved.extend(self.board.selected)
         self.board.delete_old_selected_squares()
+
+    def clear_initial_state(self):
+        self.initial_state = [
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)]
+        ]
 
     def get_piece_name_from_index(self, index):
         index_to_pieces = {
@@ -87,16 +116,7 @@ class GameState():
 def generate_initial_state(gs):
     load_images()
     pieces = {"bQ": Queen(2, IMAGES["bQ"]), "wQ": Queen(1, IMAGES["wQ"])}
-    initial_state = [
-            [gs.pieces["bR"](), gs.pieces["bN"](), gs.pieces["bB"](), gs.pieces["bQ"](), gs.pieces["bK"](), gs.pieces["bB"](), gs.pieces["bN"](), gs.pieces["bR"]()],
-            [gs.pieces["bp"]() for i in range(8)],
-            [Empty_Space() for i in range(8)],
-            [Empty_Space() for i in range(8)],
-            [Empty_Space() for i in range(8)],
-            [Empty_Space() for i in range(8)],
-            [gs.pieces["wp"]() for i in range(8)],
-            [gs.pieces["wR"](), gs.pieces["wN"](), gs.pieces["wB"](), gs.pieces["wQ"](), gs.pieces["wK"](), gs.pieces["wB"](), gs.pieces["wN"](), gs.pieces["wR"]()]
-        ]
+    initial_state = gs.get_initial_state()
         
 
     return initial_state, pieces
@@ -280,7 +300,29 @@ def upload(screen, gs):
         p.display.flip()
         clock.tick(30)
 
+def customize_board(gs, screen):
+    done = False
+    gs.clear_initial_state()
+    initial_state, pieces = generate_initial_state(gs)
+    gs.board = Board(initial_state, pieces)
+    while not done:
 
+        for e in p.event.get():
+            location = p.mouse.get_pos()
+            
+            if e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1]>280):
+                col = location[0]//SQ_SIZE
+                row = location[1]//SQ_SIZE
+                opposite_row = 3-(row-4) if row>=4 else 4+(3-row)
+                gs.initial_state[row][col] = gs.get_piece_name_from_index(gs.current_piece)
+                gs.initial_state[opposite_row][col] = gs.get_piece_name_from_index(gs.current_piece+6)
+                initial_state, pieces = generate_initial_state(gs)
+                gs.board = Board(initial_state, pieces)
+
+
+        gs.board.drawGameState(screen)
+        p.display.flip()
+    
 
 def create_piece():
     screen = p.display.set_mode((WIDHT, HEIGHT))
@@ -307,14 +349,15 @@ def create_piece():
         box5 = ClickBox(WIDHT-140, 120, 140, 40, lambda: upload(screen, gs), "Upload")
         box6 = ClickBox(WIDHT-140, 160, 140, 40, lambda: download(screen, gs), "Download")
         box7 = ClickBox(WIDHT-140, 200, 140, 40, lambda: gs.next_piece(), "Next piece")
+        box8 = ClickBox(WIDHT-140, 240, 140, 40, lambda: customize_board(gs, screen), "Customize board")
         box2 = ClickBox(WIDHT-140, 40, 140, 40, gs.flip_slider, "Slider" if gs.slider else "Jumper")
-        boxes = [box, box2, box3, box5, box6, box7]
+        boxes = [box, box2, box3, box5, box6, box7, box8]
         for e in p.event.get():
             location = p.mouse.get_pos()
             if e.type == p.QUIT:
                 running = False
             
-            elif e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1]>240):
+            elif e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1]>280):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
                 if gs.slider:
