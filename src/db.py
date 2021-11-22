@@ -20,7 +20,4 @@ def get_db_pieces():
     collection_name = dbname["piece_rules"]
     return collection_name.find()
 
-get_database()
-
-
 

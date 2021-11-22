@@ -1,6 +1,8 @@
 import pygame as p
 from board import Board, Move
 from rules import CombinedSlide, Jump, JumpAttack, SingleSlide
+from input_box import InputBox
+import db
 import pygame_menu
 
 WIDHT = HEIGHT = 512
@@ -59,7 +61,7 @@ def generate_initial_state2():
 def load_images():
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load(f"../images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load(f"./images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
 
 
 def start_the_game(gs=None):
@@ -137,6 +139,40 @@ def save_sliding_piece(board, index, gs):
     gs.add_extra_rules(rules)
     return gs
 
+def upload_piece(name, rules):
+    json = {
+        "name": name
+    }
+    json["rules"] = [rule.to_json() for rule in rules]
+    db.insert_piece_to_db(json)
+
+
+def load_pieces(screen, gs):
+    clock = p.time.Clock()
+    input_box1 = InputBox(100, 100, 140, 32)
+    input_boxes = [input_box1]
+    done = False
+
+    while not done:
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                done = True
+            for box in input_boxes:
+                name = box.handle_event(event)
+                if name is not None and name != '':
+                    upload_piece(name, gs.extra_rules[0])
+
+
+        for box in input_boxes:
+            box.update()
+
+        screen.fill((30, 30, 30))
+        for box in input_boxes:
+            box.draw(screen)
+
+        p.display.flip()
+        clock.tick(30)
+
 
 def create_piece():
     screen = p.display.set_mode((WIDHT, HEIGHT))
@@ -151,6 +187,7 @@ def create_piece():
     status_text = smallfont.render(status_str, True, color)
     save_text = smallfont.render("Save", True, color)
     play_text = smallfont.render("Play", True, color)
+    load_text = smallfont.render("Load", True, color)
 
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
@@ -185,6 +222,9 @@ def create_piece():
 
                 elif WIDHT-140 <= location[0] <= WIDHT and 120<location[1]<=160:
                     start_the_game(gs)
+
+                elif WIDHT-140 <= location[0] <= WIDHT and 160<location[1]<=200:
+                    load_pieces(screen, gs)
                 
                 else:
                     col = location[0]//SQ_SIZE
@@ -204,14 +244,12 @@ def create_piece():
                         player_clicks.append(selected_square)
 
         board.drawGameState(screen)
-        p.draw.rect(screen,color_dark,[WIDHT-140,0,140,40])
-        p.draw.rect(screen,color_dark,[WIDHT-140,40,140,40])
-        p.draw.rect(screen,color_dark,[WIDHT-140,80,140,40])
-        p.draw.rect(screen,color_dark,[WIDHT-140,120,140,40])
+        p.draw.rect(screen,color_dark,[WIDHT-140,0,140,200])
         screen.blit(text , (WIDHT-140+50,0))
         screen.blit(status_text , (WIDHT-140+50,40))
         screen.blit(save_text , (WIDHT-140+50,80))
         screen.blit(play_text , (WIDHT-140+50,120))
+        screen.blit(load_text, (WIDHT-140+50,160))
         clock.tick(MAX_FPS)
         p.display.flip()
 
