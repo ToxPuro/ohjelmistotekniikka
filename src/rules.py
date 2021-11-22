@@ -62,7 +62,8 @@ class Jump(Rule):
         self.y_hop = y_hop
 
     def generate_positions(self,player, position, board, piece):
-        new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
+        y_hop = self.y_hop  if player == 1 else -self.y_hop 
+        new_position = (position[0]+y_hop, position[1]+self.x_hop)
         if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
             if board.state[new_position[0]][new_position[1]].is_empty():
                 return [new_position]
@@ -84,7 +85,8 @@ class JumpAttack(Rule):
         self.y_hop = y_hop
 
     def generate_positions(self,player, position, board, piece):
-        new_position = (position[0]+self.y_hop, position[1]+self.x_hop)
+        y_hop = self.y_hop  if player == 1 else -self.y_hop 
+        new_position = (position[0]+y_hop, position[1]+self.x_hop)
         if 0<=new_position[0]<board.dimension and 0<=new_position[1]<board.dimension:
             if not board.state[new_position[0]][new_position[1]].is_empty() and board.state[new_position[0]][new_position[1]].player != piece.player:
                 return [new_position]

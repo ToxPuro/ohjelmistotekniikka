@@ -10,12 +10,13 @@ from rules import CombinedSlidingAttack, CombinedSlide, EnPassant, SingleSlide, 
 
 
 class Piece():
-    def __init__(self, player, image, rules, square_size=64):
+    def __init__(self, player, image, rules, is_king=False, square_size=64):
         self.player = player
         self.image = image
         self.square_size = square_size
         self.moved = False
         self.rules = rules
+        self._is_king = is_king
         
 
     def draw(self, screen, square_size, position):
@@ -31,7 +32,7 @@ class Piece():
         return False
 
     def is_king(self):
-        return False
+        return self._is_king
 
     def is_pawn(self):
         return False
@@ -75,9 +76,6 @@ class Pawn(Piece):
     def is_pawn(self):
         return True
 
-    def __str__(self):
-        return "Pawn"
-
     def set_as_moved(self):
         self.rules = [CombinedSlide([SingleSlide(0,-1)]), CombinedSlidingAttack([SingleSlide(1,-1)]), CombinedSlidingAttack([SingleSlide(-1,-1)]), EnPassant() ]
         super().set_as_moved()
@@ -101,6 +99,7 @@ class Empty_Space(Piece):
     def __init__(self):
         self.player = 0
         self.moved = False
+        self._is_king = False
 
     def draw(self, screen, square_size, position):
         pass

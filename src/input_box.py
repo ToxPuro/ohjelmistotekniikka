@@ -20,7 +20,7 @@ class ClickBox():
         
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
-            print(self.text)
+            return self.function()
 
     def draw(self, screen):
         # Blit the text.
