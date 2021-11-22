@@ -1,7 +1,8 @@
+from os import WIFSIGNALED
 import pygame as p
 from board import Board, Move
 from rules import CombinedSlide, Jump, JumpAttack, SingleSlide
-from input_box import InputBox
+from input_box import ClickBox, InputBox
 import db
 import pygame_menu
 
@@ -61,7 +62,7 @@ def generate_initial_state2():
 def load_images():
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load(f"./images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load(f"../images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
 
 
 def start_the_game(gs=None):
@@ -177,17 +178,23 @@ def load_pieces(screen, gs):
 def create_piece():
     screen = p.display.set_mode((WIDHT, HEIGHT))
     gs = GameState()
-    color_dark = (100,100,100)
-    smallfont = p.font.SysFont('Corbel',35)
-    color = (255,255,255)
-    text = smallfont.render('Back' , True , color)
     index = 1
-    slider = True
-    status_str = "Slider" if slider else "Jumper"
-    status_text = smallfont.render(status_str, True, color)
-    save_text = smallfont.render("Save", True, color)
-    play_text = smallfont.render("Play", True, color)
-    load_text = smallfont.render("Load", True, color)
+    slider = False
+    hello = lambda : print("Hello")
+    box = ClickBox(WIDHT-140, 0, 140, 40, hello, "Back")
+    box2 = ClickBox(WIDHT-140, 40, 140, 40, hello, "Slider" if slider else "Jumper")
+    box3 = ClickBox(WIDHT-140, 80, 140, 40, hello, "Save")
+    box4 = ClickBox(WIDHT-140, 120, 140, 40, hello, "Play")
+    box5 = ClickBox(WIDHT-140, 120, 140, 40, hello, "Upload")
+    box6 = ClickBox(WIDHT-140, 160, 140, 40, hello, "Download")
+    boxes = [box, box2, box3, box4, box5, box6]
+
+    # screen.blit(text , (WIDHT-140+50,0))
+    # screen.blit(status_text , (WIDHT-140+50,40))
+    # screen.blit(save_text , (WIDHT-140+50,80))
+    # screen.blit(play_text , (WIDHT-140+50,120))
+    # screen.blit(upload_text, (WIDHT-140+50,160))
+
 
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
@@ -198,58 +205,34 @@ def create_piece():
     player_clicks = []
     while running:
         for e in p.event.get():
+            location = p.mouse.get_pos()
             if e.type == p.QUIT:
                 running = False
-            elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-
-                if WIDHT-140 <= location[0] <= WIDHT and 0 <= location[1] <= 40:
-                    main() 
-                
-                elif WIDHT-140 <= location[0] <= WIDHT and 40<location[1]<=80:
-                    slider = not slider
-                    status_str = "Slider" if slider else "Jumper"
-                    index = 1
-                    status_text = smallfont.render(status_str, True, color)
-                    board = Board(initial_state, pieces)
-                    gs = GameState()
-
-                elif WIDHT-140 <= location[0] <= WIDHT and 80<location[1]<=120:
-                    if not slider:
-                        gs = save_jump_piece(board, gs)
+            
+            elif e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1]>200):
+                col = location[0]//SQ_SIZE
+                row = location[1]//SQ_SIZE
+                if slider:
+                    if col == 3 and row == 3:
+                        index = index+1
                     else:
-                        gs = save_sliding_piece(board, index, gs)
-
-                elif WIDHT-140 <= location[0] <= WIDHT and 120<location[1]<=160:
-                    start_the_game(gs)
-
-                elif WIDHT-140 <= location[0] <= WIDHT and 160<location[1]<=200:
-                    load_pieces(screen, gs)
-                
+                        board.set_slide_selected(row, col, index)
                 else:
-                    col = location[0]//SQ_SIZE
-                    row = location[1]//SQ_SIZE
-                    if slider:
-                        if col == 3 and row == 3:
-                            index = index+1
-                        else:
-                            board.set_slide_selected(row, col, index)
-                    else:
-                        board.set_jump_selected(row, col)
-                    if selected_square == (row, col):
-                        selected_square = ()
-                        player_clicks = []
-                    else:
-                        selected_square = (row, col)
-                        player_clicks.append(selected_square)
+                    board.set_jump_selected(row, col)
+                if selected_square == (row, col):
+                    selected_square = ()
+                    player_clicks = []
+                else:
+                    selected_square = (row, col)
+                    player_clicks.append(selected_square)
+
+            else:
+                for box in boxes:
+                    box.handle_event(e)
 
         board.drawGameState(screen)
-        p.draw.rect(screen,color_dark,[WIDHT-140,0,140,200])
-        screen.blit(text , (WIDHT-140+50,0))
-        screen.blit(status_text , (WIDHT-140+50,40))
-        screen.blit(save_text , (WIDHT-140+50,80))
-        screen.blit(play_text , (WIDHT-140+50,120))
-        screen.blit(load_text, (WIDHT-140+50,160))
+        for box in boxes:
+            box.draw(screen)
         clock.tick(MAX_FPS)
         p.display.flip()
 
