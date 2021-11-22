@@ -305,12 +305,19 @@ def customize_board(gs, screen):
     gs.clear_initial_state()
     initial_state, pieces = generate_initial_state(gs)
     gs.board = Board(initial_state, pieces)
+    box1 = ClickBox(WIDHT-140, 0, 140, 40, lambda: gs.next_piece(), "Next piece")
+    def fun():
+        nonlocal done
+        done = True
+    
+    box2 = ClickBox(WIDHT-140, 40, 140, 40, fun, "Done")
+    boxes = [box1, box2]
     while not done:
 
         for e in p.event.get():
             location = p.mouse.get_pos()
             
-            if e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1]>280):
+            if e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1]>80):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
                 opposite_row = 3-(row-4) if row>=4 else 4+(3-row)
@@ -319,8 +326,15 @@ def customize_board(gs, screen):
                 initial_state, pieces = generate_initial_state(gs)
                 gs.board = Board(initial_state, pieces)
 
+            else:
+                for box in boxes:
+                    box.handle_event(e)
+
+
 
         gs.board.drawGameState(screen)
+        for box in boxes:
+            box.draw(screen)
         p.display.flip()
     
 
