@@ -144,8 +144,15 @@ def generate_initial_state2():
 def load_images():
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load(f"./images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load(f"../images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
 
+def drawText(screen, text):
+    font = p.font.SysFont("Helvitca", 32, True, False)
+    rendered_text = font.render(text, 0, p.Color("Gray"))
+    text_location = p.Rect(0,0,WIDHT, HEIGHT).move(WIDHT/2 - rendered_text.get_width()/2, HEIGHT/2 - rendered_text.get_height()/2)
+    screen.blit(rendered_text, text_location)
+    text_shadow = font.render(text, 0, p.Color("Black"))
+    screen.blit(text_shadow, text_location.move(2,2))
 
 def start_the_game(gs=None):
     screen = p.display.set_mode((WIDHT, HEIGHT))
@@ -160,11 +167,12 @@ def start_the_game(gs=None):
     player_clicks = []
     valid_moves = board.get_all_valid_moves()
     move_made = False
+    game_over = False
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-            elif e.type == p.MOUSEBUTTONDOWN:
+            elif e.type == p.MOUSEBUTTONDOWN and not game_over: 
                 location = p.mouse.get_pos()
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
@@ -190,7 +198,19 @@ def start_the_game(gs=None):
         if move_made:
             valid_moves = board.get_all_valid_moves()
             move_made = False
-        board.drawGameState(screen)
+        board.drawGameState(screen, valid_moves, selected_square)
+
+        if board.checkmate():
+            game_over = True
+            if board.turn == 1:
+                drawText(screen, "Black wins by checkmate")
+            else:
+                drawText(screen, "White wins by checkmate")
+
+        if board.stalemate():
+            game_over = True
+            drawText(screen, "Stalemate")
+
         clock.tick(MAX_FPS)
         p.display.flip()
 
@@ -347,14 +367,6 @@ def create_piece():
     screen = p.display.set_mode((WIDHT, HEIGHT))
     gs = GameState()
 
-    
-
-    # screen.blit(text , (WIDHT-140+50,0))
-    # screen.blit(status_text , (WIDHT-140+50,40))
-    # screen.blit(save_text , (WIDHT-140+50,80))
-    # screen.blit(play_text , (WIDHT-140+50,120))
-    # screen.blit(upload_text, (WIDHT-140+50,160))
-
 
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
@@ -409,12 +421,11 @@ def create_piece():
 def main():
     p.init()
     screen = p.display.set_mode((WIDHT, HEIGHT))
-    menu = pygame_menu.Menu('Welcome', 400, 300,
+    menu = pygame_menu.Menu('Bizarro Chess', 400, 300,
                        theme=pygame_menu.themes.THEME_BLUE)
 
-    menu.add.text_input('Name :', default='John Doe')
     menu.add.button('Play', start_the_game)
-    menu.add.button("Create a new piece", create_piece)
+    menu.add.button("Settings", create_piece)
     menu.add.button('Quit', pygame_menu.events.EXIT)
     menu.mainloop(screen)
     

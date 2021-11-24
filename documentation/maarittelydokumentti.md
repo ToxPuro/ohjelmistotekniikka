@@ -4,10 +4,12 @@ Sovellus on shakkipeli, jossa käyttäjä voi luoda omia nappuloita, jotka liikk
 
 ## Toiminnallisuus
 
-* Voi pelata shakkia uniikeilla nappuloilla toista pelaaja vastaan lokaalisti
-* Voi tehdä ja valita uniikkeja nappuloita, joilla pelata
+* Voi pelata shakkia
+* Voi tehdä uniikkeja nappuloita (Done)
     * Käyttöliittymänä toimii shakkilauta
-* Voi ladata nettiin omia uniikkeja nappuloita, joita muut pelaajat voivat ladata omaan peliin
+    * Voi valita miten nappula hyökkää ja liikkuu erikseen
+* Voi valita millä nappuloilla haluaa pelata
+* Voi ladata nettiin omia uniikkeja nappuloita, joita muut pelaajat voivat ladata omaan peliin (Done)
     * Sama käyttöliittymä kuin nappuloiden luonti
 
 ## Jatkokehitysideoita

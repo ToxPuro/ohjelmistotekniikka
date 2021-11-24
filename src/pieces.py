@@ -115,7 +115,7 @@ class EnPassantSquare(Empty_Space):
         return True
 
     def draw(self, screen, square_size, position):
-        p.draw.rect(screen, p.Color("black"), p.Rect(position[1]*square_size, position[0]*square_size, square_size, square_size))
+        pass
 
 class SelectedJumpSquare(Piece):
     def __init__(self):

@@ -14,9 +14,23 @@ class Board():
         self.pieces = pieces
         self.en_passant_squares = []
         self.selected = []
+
+    def highlight_squares(self, screen, valid_moves, selected_square):
+        if selected_square != ():
+            row, column = selected_square
+            if self.state[row][column].player == self.turn:
+                s = p.Surface((self.square_size, self.square_size))
+                s.set_alpha(100)
+                s.fill(p.Color("blue"))
+                screen.blit(s, (column*self.square_size, row*self.square_size))
+                s.fill(p.Color("yellow"))
+                for move in valid_moves:
+                    if move.start_row == row and move.start_col == column:
+                        screen.blit(s, (move.end_col*self.square_size, move.end_row*self.square_size))
     
-    def drawGameState(self, screen):
+    def drawGameState(self, screen, valid_moves=[], selected_square=()):
         self.drawSquares(screen)
+        self.highlight_squares(screen, valid_moves, selected_square)
         self.drawPieces(screen)
 
     def drawSquares(self, screen):
@@ -91,6 +105,16 @@ class Board():
 
         return moves
 
+            
+    def checkmate(self):
+        if len(self.get_all_valid_moves()) == 0 and self.inCheck():
+            return True
+
+    def stalemate(self):
+        if len(self.get_all_valid_moves()) == 0 and not self.inCheck():
+            return True
+
+        
     def inCheck(self):
         return self.square_under_attack(self.king_locations[self.turn])
 

@@ -25,8 +25,10 @@ class CombinedSlidingAttack(Rule):
         new_positions = []
         for rule in self.rules:
             new_position = rule.generate_positions(player, position, board, piece)[0]
-            if not board.state[new_position[0]][new_position[1]].is_empty() and board.state[new_position[0]][new_position[1]].player != piece.player:
-                return [new_position]
+            if not board.state[new_position[0]][new_position[1]].is_empty():
+                if board.state[new_position[0]][new_position[1]].player != piece.player:
+                    return [new_position]
+                return []
             position = new_position
         return new_positions
 
