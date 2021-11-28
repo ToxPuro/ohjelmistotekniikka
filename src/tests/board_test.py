@@ -2,7 +2,7 @@ import unittest
 from board import Board
 
 
-class TestRuleReader(unittest.TestCase):
+class TestBoard(unittest.TestCase):
 
-    def test_incorrect_json_does_not_work(self):
+    def test_hello(self):
         self.assertEqual(1, 1)

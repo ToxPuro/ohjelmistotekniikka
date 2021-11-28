@@ -2,7 +2,7 @@ import unittest
 from pieces import Piece, Knight, Pawn, King, Queen, Rook
 
 
-class TestRuleReader(unittest.TestCase):
+class TestPieces(unittest.TestCase):
 
-    def test_incorrect_json_does_not_work(self):
+    def test_hello(self):
         self.assertEqual(1, 1)

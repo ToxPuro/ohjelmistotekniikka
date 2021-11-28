@@ -2,7 +2,7 @@ import unittest
 from rules import CombinedSlide, CombinedSlidingAttack, Jump, JumpAttack, RuleStar, RuleStarAttacks, SingleSlide
 
 
-class TestRuleReader(unittest.TestCase):
+class TestRules(unittest.TestCase):
 
-    def test_incorrect_json_does_not_work(self):
+    def test_hello(self):
         self.assertEqual(1, 1)
