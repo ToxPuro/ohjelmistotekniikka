@@ -4,7 +4,7 @@ Sovellus on shakkipeli, jossa käyttäjä voi luoda omia nappuloita, jotka liikk
 
 ## Toiminnallisuus
 
-* Voi pelata shakkia
+* Voi pelata shakkia (Done)
 * Voi tehdä uniikkeja nappuloita (Done)
     * Käyttöliittymänä toimii shakkilauta
     * Voi valita miten nappula hyökkää ja liikkuu erikseen

@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 
 def get_database():
     load_dotenv()
-    PASSWORD = os.environ.get("PASSWORD")
-    CONNECTION_STRING = f"mongodb+srv://ToukoPuro:{PASSWORD}@cluster0.9ftzk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    CONNECTION_STRING = f"mongodb+srv://ToukoPuro:valiaikainenkurssiavarten@cluster0.9ftzk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
     client = MongoClient(CONNECTION_STRING)
     return client['piece_rules']
 
