@@ -1,5 +1,6 @@
 from move import Move
 
+
 class Rule():
     def get_moves(self, player, position, board, piece):
         moves = self.generate_moves(player, position, board, piece)
@@ -17,6 +18,7 @@ class Rule():
     def to_json(self):
         pass
 
+
 class CombinedSlidingAttack(Rule):
     def __init__(self, rules):
         self.rules = rules
@@ -24,7 +26,8 @@ class CombinedSlidingAttack(Rule):
     def generate_positions(self, player, position, board, piece):
         new_positions = []
         for rule in self.rules:
-            new_position = rule.generate_positions(player, position, board, piece)[0]
+            new_position = rule.generate_positions(
+                player, position, board, piece)[0]
             if not board.state[new_position[0]][new_position[1]].is_empty():
                 if board.state[new_position[0]][new_position[1]].player != piece.player:
                     return [new_position]
@@ -38,6 +41,7 @@ class CombinedSlidingAttack(Rule):
             "slides": [rule.to_json() for rule in self.rules]
         }
 
+
 class CombinedSlide(Rule):
     def __init__(self, rules):
         self.rules = rules
@@ -45,7 +49,8 @@ class CombinedSlide(Rule):
     def generate_positions(self, player, position, board, piece):
         new_positions = []
         for rule in self.rules:
-            new_position = rule.generate_positions(player, position, board, piece)[0]
+            new_position = rule.generate_positions(
+                player, position, board, piece)[0]
             if not board.state[new_position[0]][new_position[1]].is_empty():
                 return new_positions
             new_positions.append(new_position)
@@ -58,15 +63,16 @@ class CombinedSlide(Rule):
             "slides": [rule.to_json() for rule in self.rules]
         }
 
+
 class Jump(Rule):
     def __init__(self, x_hop, y_hop):
         self.x_hop = x_hop
         self.y_hop = y_hop
 
-    def generate_positions(self,player, position, board, piece):
-        y_hop = self.y_hop  if player == 1 else -self.y_hop 
+    def generate_positions(self, player, position, board, piece):
+        y_hop = self.y_hop if player == 1 else -self.y_hop
         new_position = (position[0]+y_hop, position[1]+self.x_hop)
-        if 0<new_position[0]<board.dimension and 0<new_position[1]<board.dimension:
+        if 0 < new_position[0] < board.dimension and 0 < new_position[1] < board.dimension:
             if board.state[new_position[0]][new_position[1]].is_empty():
                 return [new_position]
         return []
@@ -81,15 +87,16 @@ class Jump(Rule):
     def __str__(self):
         return f"x_hop: {self.x_hop}, y_hop {self.y_hop}"
 
+
 class JumpAttack(Rule):
     def __init__(self, x_hop, y_hop):
         self.x_hop = x_hop
         self.y_hop = y_hop
 
-    def generate_positions(self,player, position, board, piece):
-        y_hop = self.y_hop  if player == 1 else -self.y_hop 
+    def generate_positions(self, player, position, board, piece):
+        y_hop = self.y_hop if player == 1 else -self.y_hop
         new_position = (position[0]+y_hop, position[1]+self.x_hop)
-        if 0<=new_position[0]<board.dimension and 0<=new_position[1]<board.dimension:
+        if 0 <= new_position[0] < board.dimension and 0 <= new_position[1] < board.dimension:
             if not board.state[new_position[0]][new_position[1]].is_empty() and board.state[new_position[0]][new_position[1]].player != piece.player:
                 return [new_position]
         return []
@@ -102,18 +109,19 @@ class JumpAttack(Rule):
         }
 
 
-    
 class SingleSlide(Rule):
     def __init__(self, x_increment, y_increment):
         self.x_increment = x_increment
         self.y_increment = y_increment
-    
+
     def generate_positions(self, player, position, board, piece):
         if player == 1:
-            new_position = (position[0]+self.y_increment, position[1]+self.x_increment)
+            new_position = (position[0]+self.y_increment,
+                            position[1]+self.x_increment)
         else:
-            new_position = (position[0]-self.y_increment, position[1]+self.x_increment)
-        if 0<=new_position[0]<board.dimension and 0<=new_position[1]<board.dimension:
+            new_position = (position[0]-self.y_increment,
+                            position[1]+self.x_increment)
+        if 0 <= new_position[0] < board.dimension and 0 <= new_position[1] < board.dimension:
             return [new_position]
         return [position]
 
@@ -129,7 +137,7 @@ class RuleStar(Rule):
     def __init__(self, rule):
         self.rule = rule
 
-    def generate_positions(self,player, position, board, piece):
+    def generate_positions(self, player, position, board, piece):
         return CombinedSlide([self.rule for i in range(board.dimension)]).generate_positions(player, position, board, piece)
 
     def to_json(self):
@@ -139,11 +147,12 @@ class RuleStar(Rule):
 
         }
 
+
 class RuleStarAttacks(Rule):
     def __init__(self, rule):
         self.rule = rule
 
-    def generate_positions(self,player, position, board, piece):
+    def generate_positions(self, player, position, board, piece):
         return CombinedSlidingAttack([self.rule for i in range(board.dimension)]).generate_positions(player, position, board, piece)
 
     def to_json(self):
@@ -153,22 +162,26 @@ class RuleStarAttacks(Rule):
 
         }
 
+
 class EnPassant(Rule):
-    def generate_positions(self,player, position, board, piece):
+    def generate_positions(self, player, position, board, piece):
         if player == 1:
-            new_positions = [(position[0]-1, position[1]-1), (position[0]-1, position[1]+1)]
+            new_positions = [(position[0]-1, position[1]-1),
+                             (position[0]-1, position[1]+1)]
         else:
-            new_positions = [(position[0]+1, position[1]-1), (position[0]+1, position[1]+1)]
+            new_positions = [(position[0]+1, position[1]-1),
+                             (position[0]+1, position[1]+1)]
 
         for new_position in new_positions:
-            if 0<=new_position[0]<board.dimension and 0<=new_position[1]<board.dimension:
+            if 0 <= new_position[0] < board.dimension and 0 <= new_position[1] < board.dimension:
                 if board.state[new_position[0]][new_position[1]].is_en_passant():
                     return [new_position]
-        
+
         return []
 
+
 class Castling(Rule):
-    def get_moves(self,player, position, board, piece):
+    def get_moves(self, player, position, board, piece):
         moves = []
         if piece.moved:
             return []

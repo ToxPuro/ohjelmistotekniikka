@@ -11,13 +11,13 @@ FONT = pg.font.Font(None, 32)
 
 class ClickBox():
 
-    def __init__(self, x,y,w,h,function, text='', font=pg.font.SysFont('Corbel',35), rec_color=(100,100,100), text_color=(255,255,255)):
-        self.rect = pg.Rect(x,y,w,h)
+    def __init__(self, x, y, w, h, function, text='', font=pg.font.SysFont('Corbel', 35), rec_color=(100, 100, 100), text_color=(255, 255, 255)):
+        self.rect = pg.Rect(x, y, w, h)
         self.rec_color = rec_color
         self.text = text
         self.txt_surface = font.render(text, True, text_color)
         self.function = function
-        
+
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
             return self.function()
@@ -27,7 +27,7 @@ class ClickBox():
         pg.draw.rect(screen, self.rec_color, self.rect)
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        
+
 
 class InputBox:
 
@@ -72,7 +72,6 @@ class InputBox:
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
         pg.draw.rect(screen, self.color, self.rect, 2)
-
 
 
 def main():

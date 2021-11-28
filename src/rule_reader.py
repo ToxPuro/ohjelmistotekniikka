@@ -1,8 +1,9 @@
 from rules import CombinedSlide, Jump, JumpAttack, SingleSlide, CombinedSlidingAttack, RuleStar, RuleStarAttacks
 
+
 class RuleReader():
 
-    def json_to_rule(self,json):
+    def json_to_rule(self, json):
         if json["type"] == "single_slide":
             return SingleSlide(json["x_increment"], json["y_increment"])
 
@@ -23,6 +24,5 @@ class RuleReader():
 
         elif json["type"] == "RuleStarAttacks":
             return RuleStarAttacks(self.json_to_rule(json["rule"]))
-        
-        return "incorrect type"
 
+        return "incorrect type"

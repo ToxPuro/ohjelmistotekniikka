@@ -2,11 +2,11 @@ import unittest
 from rule_reader import RuleReader
 from rules import CombinedSlide, CombinedSlidingAttack, Jump, JumpAttack, RuleStar, RuleStarAttacks, SingleSlide
 
+
 class TestRuleReader(unittest.TestCase):
     def setUp(self):
         self.rule_reader = RuleReader()
 
-    
     def test_incorrect_json_does_not_work(self):
         json = {
             "type": "marshall"
@@ -14,29 +14,30 @@ class TestRuleReader(unittest.TestCase):
         rule = self.rule_reader.json_to_rule(json)
         self.assertEqual(rule, "incorrect type")
 
-    
     def test_reads_combined_sliding_attack_correct(self):
         json = {
             "type": "combined_slide_attack",
         }
-        json["slides"] =  [
-                    {
-                        "type": "single_slide",
+        json["slides"] = [
+            {
+                "type": "single_slide",
                         "x_increment": 1,
                         "y_increment": -1
-                    },
-                    {
-                        "type": "single_slide",
+            },
+            {
+                "type": "single_slide",
                         "x_increment": -1,
                         "y_increment": 1
-                    }
-                ]
+            }
+        ]
 
         rule = self.rule_reader.json_to_rule(json)
         self.assertEqual(isinstance(rule, CombinedSlidingAttack), True)
         self.assertEqual(isinstance(rule.rules[1], SingleSlide), True)
-        self.assertEqual((rule.rules[0].x_increment, rule.rules[0].y_increment), (1,-1))
-        self.assertEqual((rule.rules[1].x_increment, rule.rules[1].y_increment), (-1,1))
+        self.assertEqual(
+            (rule.rules[0].x_increment, rule.rules[0].y_increment), (1, -1))
+        self.assertEqual(
+            (rule.rules[1].x_increment, rule.rules[1].y_increment), (-1, 1))
 
     def test_reads_jump_rule_correct(self):
         json = {
@@ -75,26 +76,27 @@ class TestRuleReader(unittest.TestCase):
         json = {
             "type": "combined_slide",
         }
-        json["slides"] =  [
-                    {
-                        "type": "single_slide",
+        json["slides"] = [
+            {
+                "type": "single_slide",
                         "x_increment": 1,
                         "y_increment": -1
-                    },
-                    {
-                        "type": "single_slide",
+            },
+            {
+                "type": "single_slide",
                         "x_increment": -1,
                         "y_increment": 1
-                    }
-                ]
+            }
+        ]
 
         rule = self.rule_reader.json_to_rule(json)
         self.assertEqual(isinstance(rule, CombinedSlide), True)
         self.assertEqual(isinstance(rule.rules[1], SingleSlide), True)
-        self.assertEqual((rule.rules[0].x_increment, rule.rules[0].y_increment), (1,-1))
-        self.assertEqual((rule.rules[1].x_increment, rule.rules[1].y_increment), (-1,1))
+        self.assertEqual(
+            (rule.rules[0].x_increment, rule.rules[0].y_increment), (1, -1))
+        self.assertEqual(
+            (rule.rules[1].x_increment, rule.rules[1].y_increment), (-1, 1))
 
-    
     def test_reads_rulestar_correct(self):
         json = {
             "type": "RuleStar",
@@ -108,7 +110,8 @@ class TestRuleReader(unittest.TestCase):
         rule = self.rule_reader.json_to_rule(json)
         self.assertEqual(isinstance(rule, RuleStar), True)
         self.assertEqual(isinstance(rule.rule, SingleSlide), True)
-        self.assertEqual((rule.rule.x_increment, rule.rule.y_increment), (0,-1))
+        self.assertEqual(
+            (rule.rule.x_increment, rule.rule.y_increment), (0, -1))
 
     def test_reads_rulestar_attack_correct(self):
         json = {
@@ -123,5 +126,5 @@ class TestRuleReader(unittest.TestCase):
         rule = self.rule_reader.json_to_rule(json)
         self.assertEqual(isinstance(rule, RuleStarAttacks), True)
         self.assertEqual(isinstance(rule.rule, SingleSlide), True)
-        self.assertEqual((rule.rule.x_increment, rule.rule.y_increment), (0,-1))
-
+        self.assertEqual(
+            (rule.rule.x_increment, rule.rule.y_increment), (0, -1))
