@@ -8,4 +8,3 @@ Move on yksittäinen liike pelilaudalla jolla on jokin aloitusruutu, lopetusruut
 
 Luokilla Piece ja Rule on monta aliluokkaa, Knight, King, Queen, SingleSlide, CombinedSlide, mutta näin pieneksi rikkominen ei ole oleellista koko sovellusta kattavassa luokkakaaviossa
 
-![Luokkakaavio](./kuvat/luokka_kaavio.jpg)
