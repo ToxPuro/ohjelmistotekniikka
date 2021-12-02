@@ -9,5 +9,8 @@ Week 4:
     * Wed: 2h
     * Sun: 3h
 
-Total: 19h
+Week 5:
+    * Thu: 2,5h
+    
+Total: 22h
     
