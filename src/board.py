@@ -1,7 +1,5 @@
-from pieces import Empty_Space, EnPassantSquare, Queen, SelectedJumpSquare, SelectedSlideSquare
-from move import Move
-import pygame as p
-
+from pieces import Empty_Space, EnPassantSquare, SelectedJumpSquare, SelectedSlideSquare
+from ui.board_ui import BoardUI
 
 class Board():
     def __init__(self, state, pieces, dimension=8, square_size=64, player_num=2):
@@ -15,40 +13,13 @@ class Board():
         self.pieces = pieces
         self.en_passant_squares = []
         self.selected = []
+        self.board_ui = BoardUI()
 
-    def highlight_squares(self, screen, valid_moves, selected_square):
-        if selected_square != ():
-            row, column = selected_square
-            if self.state[row][column].player == self.turn:
-                s = p.Surface((self.square_size, self.square_size))
-                s.set_alpha(100)
-                s.fill(p.Color("blue"))
-                screen.blit(s, (column*self.square_size, row*self.square_size))
-                s.fill(p.Color("yellow"))
-                for move in valid_moves:
-                    if move.start_row == row and move.start_col == column:
-                        screen.blit(s, (move.end_col*self.square_size,
-                                    move.end_row*self.square_size))
 
-    def drawGameState(self, screen, valid_moves=[], selected_square=()):
-        self.drawSquares(screen)
-        self.highlight_squares(screen, valid_moves, selected_square)
-        self.drawPieces(screen)
+    def draw_game_state(self, screen, valid_moves=[], selected_square=()):
+        self.board_ui.draw_game_state(screen, valid_moves, selected_square, self)
 
-    def drawSquares(self, screen):
-        colors = [p.Color("white"), p.Color("gray")]
-        for r in range(self.dimension):
-            for c in range(self.dimension):
-                color = colors[((r+c) % 2)]
-                p.draw.rect(screen, color, p.Rect(
-                    c*self.square_size, r*self.square_size, self.square_size, self.square_size))
-
-    def drawPieces(self, screen):
-        for row in range(len(self.state)):
-            for col in range(len(self.state[row])):
-                self.state[row][col].draw(screen, self.square_size, (row, col))
-
-    def makeMove(self, move, simulation=False):
+    def make_move(self, move, simulation=False):
 
         self.state[move.start_row][move.start_col] = Empty_Space()
         self.state[move.end_row][move.end_col] = move.piece_moved
@@ -78,15 +49,12 @@ class Board():
             self.swap_turns()
 
     def swap_turns(self):
-        if self.turn == 1:
-            self.turn = 2
-        else:
-            self.turn = 1
+        self.turn = 2 if self.turn == 1 else 1
 
     def get_all_possible_moves(self, player, no_king=False):
         moves = []
-        for row in range(len(self.state)):
-            for col in range(len(self.state[row])):
+        for row, _ in enumerate(self.state):
+            for col, _ in enumerate(self.state[row]):
                 piece = self.state[row][col]
                 # ugly implementation to sidestep infinite recursion where
                 if not (piece.is_king() and no_king) and player == piece.player:
@@ -97,41 +65,32 @@ class Board():
     def get_all_valid_moves(self):
         moves = self.get_all_possible_moves(self.turn)
         for i in range(len(moves)-1, -1, -1):
-            self.makeMove(moves[i], simulation=True)
-            if self.inCheck():
-                print("inCheck")
+            self.make_move(moves[i], simulation=True)
+            if self.in_check():
                 moves.remove(moves[i])
-            self.undoMove(swap=False)
+            self.undo_move(swap=False)
 
         return moves
 
     def checkmate(self):
-        if len(self.get_all_valid_moves()) == 0 and self.inCheck():
-            return True
+        return len(self.get_all_valid_moves()) == 0 and self.in_check()
 
     def stalemate(self):
-        if len(self.get_all_valid_moves()) == 0 and not self.inCheck():
-            return True
+        return len(self.get_all_valid_moves()) == 0 and not self.in_check()
 
-    def inCheck(self):
+    def in_check(self):
         return self.square_under_attack(self.king_locations[self.turn])
 
-    def undoMove(self, swap=True):
+    def undo_move(self, swap=True):
         if len(self.move_log) != 0:
             move = self.move_log.pop()
             self.state[move.start_row][move.start_col] = move.piece_moved
             self.state[move.end_row][move.end_col] = move.piece_captured
             if swap:
-                self.switchTurnBack()
+                self.swap_turns()
             if move.piece_moved.is_king():
                 self.king_locations[self.turn] = (
                     move.start_row, move.start_col)
-
-    def switchTurnBack(self):
-        if self.turn == 1:
-            self.turn = 2
-        else:
-            self.turn = 1
 
     def square_under_attack(self, position):
         for player in range(1, self.player_num+1):
@@ -145,7 +104,7 @@ class Board():
         return False
 
     def delete_en_passant_squares(self):
-        if self.en_passant_squares != []:
+        if self.en_passant_squares:
             en_passant_square = self.en_passant_squares.pop()
             if self.state[en_passant_square[0]][en_passant_square[1]].is_en_passant():
                 self.state[en_passant_square[0]

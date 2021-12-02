@@ -111,18 +111,18 @@ class Setting():
     def flash_text(self, screen):
         if self.time > 0:
             self.flash_box.draw(screen)
-    
-    def save_sliding_piece(self):
-      rules = []
-      self.increase_index()
-      self.index = 1
-      for i in range(1, self.index+1):
-          index_rules = []
 
-          index_coordinates = [x for x in self.saved if x[2] == i]
-          current_coordinates = (3, 3)
-          while index_coordinates != []:
-              new_coordinates = [
+    def save_sliding_piece(self):
+        rules = []
+        self.increase_index()
+        self.index = 1
+        for i in range(1, self.index+1):
+            index_rules = []
+
+            index_coordinates = [x for x in self.saved if x[2] == i]
+            current_coordinates = (3, 3)
+            while index_coordinates != []:
+                new_coordinates = [
                   (current_coordinates[0]+1, current_coordinates[1], i),
                   (current_coordinates[0]-1, current_coordinates[1], i),
                   (current_coordinates[0], current_coordinates[1]+1, i),
@@ -133,22 +133,23 @@ class Setting():
                   (current_coordinates[0]+1, current_coordinates[1]+1, i),
               ]
 
-              for coordinate in new_coordinates:
-                  if coordinate in index_coordinates:
-                      difference = (
-                          coordinate[0] - current_coordinates[0], coordinate[1] - current_coordinates[1])
-                      current_coordinates = (coordinate[0], coordinate[1])
-                      index_rules.append(SingleSlide(
-                          difference[1], difference[0]))
-                      index_coordinates.remove(coordinate)
-                      break
+                for coordinate in new_coordinates:
+                    if coordinate in index_coordinates:
+                        difference = (
+                            coordinate[0] - current_coordinates[0], coordinate[1] - current_coordinates[1])
+                        current_coordinates = (coordinate[0], coordinate[1])
+                        index_rules.append(SingleSlide(
+                            difference[1], difference[0]))
+                        index_coordinates.remove(coordinate)
+                        break
 
-          rules.append(CombinedSlide(index_rules))
-      self.set_current_piece(rules)
+            rules.append(CombinedSlide(index_rules))
+            rules.append(CombinedSlidingAttack(index_rules))
+        self.set_current_piece(rules)
 
     def save_jump_piece(self):
-      rules = []
-      for selected_square in self.board.selected:
-        rules.append(Jump(selected_square[1]-3, selected_square[0]-3))
-        rules.append(JumpAttack(selected_square[1]-3, selected_square[0]-3))
-      self.set_current_piece(rules)
+        rules = []
+        for selected_square in self.board.selected:
+            rules.append(Jump(selected_square[1]-3, selected_square[0]-3))
+            rules.append(JumpAttack(selected_square[1]-3, selected_square[0]-3))
+        self.set_current_piece(rules)

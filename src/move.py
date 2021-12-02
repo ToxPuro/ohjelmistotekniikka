@@ -1,9 +1,9 @@
 class Move():
-    def __init__(self, startSq, endSq, board):
-        self.start_row = startSq[0]
-        self.start_col = startSq[1]
-        self.end_row = endSq[0]
-        self.end_col = endSq[1]
+    def __init__(self, start_square, end_square, board):
+        self.start_row = start_square[0]
+        self.start_col = start_square[1]
+        self.end_row = end_square[0]
+        self.end_col = end_square[1]
         self.piece_moved = board.state[self.start_row][self.start_col]
         self.piece_captured = board.state[self.end_row][self.end_col]
 
@@ -15,7 +15,7 @@ class Move():
                 self.is_double_pawn_forward = True
 
         self.is_pawn_promotion = False
-        if self.piece_moved.is_pawn() and (self.end_row == 0 or self.end_row == 7):
+        if self.piece_moved.is_pawn() and (self.end_row in (0,7)):
             self.is_pawn_promotion = True
 
     def __eq__(self, other):

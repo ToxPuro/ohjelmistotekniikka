@@ -1,5 +1,5 @@
-from pieces import Queen, Empty_Space, Pawn
 import pygame as p
+from pieces import Queen, Empty_Space, Pawn
 WIDHT = HEIGHT = 512
 DIMENSION = 8
 SQ_SIZE = HEIGHT // DIMENSION
@@ -8,10 +8,10 @@ MAX_FPS = 15
 SQ_SIZE = 64
 IMAGES = {}
 
-def generate_initial_state(gs):
+def generate_initial_state(setting):
     load_images()
     pieces = {"bQ": Queen(2, IMAGES["bQ"]), "wQ": Queen(1, IMAGES["wQ"])}
-    initial_state = gs.get_initial_state()
+    initial_state = setting.get_initial_state()
 
     return initial_state, pieces
 

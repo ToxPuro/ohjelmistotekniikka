@@ -1,9 +1,13 @@
+import pygame_menu
 import pygame as p
-from board import Board, Move
+from pygame.constants import (
+    MOUSEBUTTONDOWN, QUIT
+)
+from board import Board
+from move import Move
 from rule_reader import RuleReader
 from ui.input_box import ClickBox, InputBox
 import db
-import pygame_menu
 from setting import Setting
 from generate import generate_initial_state, generate_initial_state2
 
@@ -21,7 +25,7 @@ SQ_SIZE = 64
 
 
 
-def drawText(screen, text):
+def draw_text(screen, text):
     font = p.font.SysFont("Helvitca", 32, True, False)
     rendered_text = font.render(text, 0, p.Color("Gray"))
     text_location = p.Rect(0, 0, WIDHT, HEIGHT).move(
@@ -31,12 +35,12 @@ def drawText(screen, text):
     screen.blit(text_shadow, text_location.move(2, 2))
 
 
-def start_the_game(gs=None):
+def start_the_game(setting=None):
     screen = p.display.set_mode((WIDHT, HEIGHT))
-    gs = Setting() if gs == None else gs
+    setting = Setting() if setting is None else setting
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
-    initial_state, pieces = generate_initial_state(gs)
+    initial_state, pieces = generate_initial_state(setting)
     board = Board(initial_state, pieces)
     running = True
     selected_square = ()
@@ -45,10 +49,10 @@ def start_the_game(gs=None):
     move_made = False
     game_over = False
     while running:
-        for e in p.event.get():
-            if e.type == p.QUIT:
+        for event in p.event.get():
+            if event.type == QUIT:
                 running = False
-            elif e.type == p.MOUSEBUTTONDOWN and not game_over:
+            elif event.type == MOUSEBUTTONDOWN and not game_over:
                 location = p.mouse.get_pos()
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
@@ -60,10 +64,10 @@ def start_the_game(gs=None):
                     player_clicks.append(selected_square)
                 if len(player_clicks) == 2:
                     move = Move(player_clicks[0], player_clicks[1], board)
-                    for i in range(len(valid_moves)):
-                        if move == valid_moves[i]:
+                    for valid_move in valid_moves:
+                        if move == valid_move:
                             move_made = True
-                            board.makeMove(move)
+                            board.make_move(move)
                             selected_square = ()
                             player_clicks = []
 
@@ -73,30 +77,30 @@ def start_the_game(gs=None):
         if move_made:
             valid_moves = board.get_all_valid_moves()
             move_made = False
-        board.drawGameState(screen, valid_moves, selected_square)
+        board.draw_game_state(screen, valid_moves, selected_square)
 
         if board.checkmate():
             game_over = True
             if board.turn == 1:
-                drawText(screen, "Black wins by checkmate")
+                draw_text(screen, "Black wins by checkmate")
             else:
-                drawText(screen, "White wins by checkmate")
+                draw_text(screen, "White wins by checkmate")
 
         if board.stalemate():
             game_over = True
-            drawText(screen, "Stalemate")
+            draw_text(screen, "Stalemate")
 
         clock.tick(MAX_FPS)
         p.display.flip()
 
 
-def save_piece(gs):
-    gs.flash_box = ClickBox(0, 0, 140, 40, lambda: 1, "Saved")
-    gs.time = 2000
-    if gs.slider:
-        gs.save_sliding_piece()
+def save_piece(setting):
+    setting.flash_box = ClickBox(0, 0, 140, 40, lambda: 1, "Saved")
+    setting.time = 2000
+    if setting.slider:
+        setting.save_sliding_piece()
     else:
-        gs.save_jump_piece()
+        setting.save_jump_piece()
 
 
 
@@ -108,7 +112,7 @@ def save_piece(gs):
 
 
 
-def download(screen, gs):
+def download(screen, setting):
     rule_reader = RuleReader()
     pieces = db.get_db_pieces()
     clock = p.time.Clock()
@@ -119,7 +123,7 @@ def download(screen, gs):
         rules = [rule_reader.json_to_rule(rule) for rule in piece["rules"]]
 
         def fun():
-            gs.set_current_piece(rules)
+            setting.set_current_piece(rules)
             return True
 
         boxes.append(ClickBox(0, (i+1)*height, 140,
@@ -127,7 +131,7 @@ def download(screen, gs):
 
     while not done:
         for event in p.event.get():
-            if event.type == p.QUIT:
+            if event.type == QUIT:
                 done = True
             for box in boxes:
                 clicked = box.handle_event(event)
@@ -141,7 +145,7 @@ def download(screen, gs):
         clock.tick(30)
 
 
-def upload(screen, gs):
+def upload(screen, setting):
     clock = p.time.Clock()
     name_box = ClickBox(0, 0, 140, 40, lambda: None, "Name")
     input_box = InputBox(0, 40, 140, 32)
@@ -151,12 +155,12 @@ def upload(screen, gs):
 
     while not done:
         for event in p.event.get():
-            if event.type == p.QUIT:
+            if event.type == QUIT:
                 done = True
             name = input_box.handle_event(event)
             if name is not None and name != '':
                 done = True
-                db.upload_piece(name, gs.piece_created.rules)
+                db.upload_piece(name, setting.piece_created.rules)
 
         input_box.update()
         for box in boxes:
@@ -166,13 +170,13 @@ def upload(screen, gs):
         clock.tick(30)
 
 
-def customize_board(gs, screen):
+def customize_board(setting, screen):
     done = False
-    gs.clear_initial_state()
-    initial_state, pieces = generate_initial_state(gs)
-    gs.board = Board(initial_state, pieces)
+    setting.clear_initial_state()
+    initial_state, pieces = generate_initial_state(setting)
+    setting.board = Board(initial_state, pieces)
     box1 = ClickBox(WIDHT-140, 0, 140, 40,
-                    lambda: gs.increment_current_piece(), "Next piece")
+                    lambda: setting.increment_current_piece(), "Next piece")
 
     def fun():
         nonlocal done
@@ -182,36 +186,36 @@ def customize_board(gs, screen):
     boxes = [box1, box2]
     while not done:
 
-        for e in p.event.get():
+        for event in p.event.get():
             location = p.mouse.get_pos()
 
-            if e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 80):
+            if event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 80):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
                 opposite_row = 3-(row-4) if row >= 4 else 4+(3-row)
-                gs.initial_state[row][col] = gs.get_piece_name_from_index(
-                    gs.current_piece)
-                gs.initial_state[opposite_row][col] = gs.get_piece_name_from_index(
-                    gs.current_piece+6)
-                initial_state, pieces = generate_initial_state(gs)
-                gs.board = Board(initial_state, pieces)
+                setting.initial_state[row][col] = setting.get_piece_name_from_index(
+                    setting.current_piece)
+                setting.initial_state[opposite_row][col] = setting.get_piece_name_from_index(
+                    setting.current_piece+6)
+                initial_state, pieces = generate_initial_state(setting)
+                setting.board = Board(initial_state, pieces)
 
             else:
                 for box in boxes:
-                    box.handle_event(e)
+                    box.handle_event(event)
 
-        gs.board.drawGameState(screen)
+        setting.board.draw_game_state(screen)
         for box in boxes:
             box.draw(screen)
         p.display.flip()
 
     initial_state, pieces = generate_initial_state2()
-    gs.board = Board(initial_state, pieces)
+    setting.board = Board(initial_state, pieces)
 
 
 def settings():
     screen = p.display.set_mode((WIDHT, HEIGHT))
-    gs = Setting()
+    setting = Setting()
 
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
@@ -221,34 +225,34 @@ def settings():
 
     while running:
         box = ClickBox(WIDHT-140, 0, 140, 40,
-                       lambda: start_the_game(gs), "Play")
-        box3 = ClickBox(WIDHT-140, 80, 140, 40, lambda: save_piece(gs), "Save")
+                       lambda: start_the_game(setting), "Play")
+        box3 = ClickBox(WIDHT-140, 80, 140, 40, lambda: save_piece(setting), "Save")
         box5 = ClickBox(WIDHT-140, 120, 140, 40,
-                        lambda: upload(screen, gs), "Upload")
+                        lambda: upload(screen, setting), "Upload")
         box6 = ClickBox(WIDHT-140, 160, 140, 40,
-                        lambda: download(screen, gs), "Download")
+                        lambda: download(screen, setting), "Download")
         box7 = ClickBox(WIDHT-140, 200, 140, 40,
-                        lambda: gs.next_piece(), "Next piece")
+                        lambda: setting.next_piece(), "Next piece")
         box8 = ClickBox(WIDHT-140, 240, 140, 40,
-                        lambda: customize_board(gs, screen), "Customize board")
-        box2 = ClickBox(WIDHT-140, 40, 140, 40, gs.flip_slider,
-                        "Slider" if gs.slider else "Jumper")
+                        lambda: customize_board(setting, screen), "Customize board")
+        box2 = ClickBox(WIDHT-140, 40, 140, 40, setting.flip_slider,
+                        "Slider" if setting.slider else "Jumper")
         boxes = [box, box2, box3, box5, box6, box7, box8]
-        for e in p.event.get():
+        for event in p.event.get():
             location = p.mouse.get_pos()
-            if e.type == p.QUIT:
+            if event.type == QUIT:
                 running = False
 
-            elif e.type == p.MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 280):
+            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 280):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
-                if gs.slider:
+                if setting.slider:
                     if col == 3 and row == 3:
-                        gs.increase_index()
+                        setting.increase_index()
                     else:
-                        gs.board.set_slide_selected(row, col, gs.index)
+                        setting.board.set_slide_selected(row, col, setting.index)
                 else:
-                    gs.board.set_jump_selected(row, col)
+                    setting.board.set_jump_selected(row, col)
                 if selected_square == (row, col):
                     selected_square = ()
                     player_clicks = []
@@ -258,13 +262,13 @@ def settings():
 
             else:
                 for box in boxes:
-                    box.handle_event(e)
+                    box.handle_event(event)
 
-        gs.board.drawGameState(screen)
+        setting.board.draw_game_state(screen)
         for box in boxes:
             box.draw(screen)
-        gs.time -= clock.tick(MAX_FPS)
-        gs.flash_text(screen)
+        setting.time -= clock.tick(MAX_FPS)
+        setting.flash_text(screen)
 
         p.display.flip()
 

@@ -1,13 +1,11 @@
 from pymongo import MongoClient
-import pymongo
-import os
 from dotenv import load_dotenv
 
 
 def get_database():
     load_dotenv()
-    CONNECTION_STRING = f"mongodb+srv://ToukoPuro:valiaikainenkurssiavarten@cluster0.9ftzk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-    client = MongoClient(CONNECTION_STRING)
+    connection_string = "mongodb+srv://ToukoPuro:valiaikainenkurssiavarten@cluster0.9ftzk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    client = MongoClient(connection_string)
     return client['piece_rules']
 
 

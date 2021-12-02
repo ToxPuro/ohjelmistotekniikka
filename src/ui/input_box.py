@@ -1,5 +1,5 @@
 import pygame as pg
-from pygame.constants import MOUSEBUTTONDOWN
+from pygame.constants import MOUSEBUTTONDOWN, K_RETURN, K_BACKSPACE, QUIT
 
 
 pg.init()
@@ -11,15 +11,15 @@ FONT = pg.font.Font(None, 32)
 
 class ClickBox():
 
-    def __init__(self, x, y, w, h, function, text='', font=pg.font.SysFont('Corbel', 35), rec_color=(100, 100, 100), text_color=(255, 255, 255)):
-        self.rect = pg.Rect(x, y, w, h)
+    def __init__(self, x_coordinate, y_coordinate, width, height, function, text='', font=pg.font.SysFont('Corbel', 35), rec_color=(100, 100, 100), text_color=(255, 255, 255)):
+        self.rect = pg.Rect(x_coordinate, y_coordinate, width, height)
         self.rec_color = rec_color
         self.text = text
         self.txt_surface = font.render(text, True, text_color)
         self.function = function
 
     def handle_event(self, event):
-        if event.type == pg.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+        if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
             return self.function()
 
     def draw(self, screen):
@@ -31,15 +31,15 @@ class ClickBox():
 
 class InputBox:
 
-    def __init__(self, x, y, w, h, text=''):
-        self.rect = pg.Rect(x, y, w, h)
+    def __init__(self, x_coordinate, y_coordinate, width, height, text=''):
+        self.rect = pg.Rect(x_coordinate, y_coordinate, width, height)
         self.color = COLOR_INACTIVE
         self.text = text
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
 
     def handle_event(self, event):
-        if event.type == pg.MOUSEBUTTONDOWN:
+        if event.type == MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
                 # Toggle the active variable.
@@ -48,14 +48,14 @@ class InputBox:
                 self.active = False
             # Change the current color of the input box.
             self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
-        if event.type == pg.KEYDOWN:
+        if event.type == KEYDOWN:
             if self.active:
-                if event.key == pg.K_RETURN:
+                if event.key == K_RETURN:
                     result = self.text
                     self.text = ''
                     self.txt_surface = FONT.render(self.text, True, self.color)
                     return result
-                elif event.key == pg.K_BACKSPACE:
+                if event.key == K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
@@ -83,7 +83,7 @@ def main():
 
     while not done:
         for event in pg.event.get():
-            if event.type == pg.QUIT:
+            if event.type == QUIT:
                 done = True
             for box in input_boxes:
                 box.handle_event(event)

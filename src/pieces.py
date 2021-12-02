@@ -57,10 +57,14 @@ class Rook(Piece):
 
 class Queen(Piece):
     def __init__(self, player, image):
-        rules = [RuleStar(SingleSlide(0, 1)), RuleStar(SingleSlide(0, -1)), RuleStar(SingleSlide(1, 0)), RuleStar(SingleSlide(-1, 0)),
-                 RuleStar(SingleSlide(-1, -1)), RuleStar(SingleSlide(1, -1)), RuleStar(SingleSlide(1, 1)), RuleStar(SingleSlide(-1, 1))]
-        rules.extend([RuleStarAttacks(SingleSlide(0, 1)), RuleStarAttacks(SingleSlide(0, -1)), RuleStarAttacks(SingleSlide(1, 0)), RuleStarAttacks(SingleSlide(-1, 0)),
-                     RuleStarAttacks(SingleSlide(-1, -1)), RuleStarAttacks(SingleSlide(1, -1)), RuleStarAttacks(SingleSlide(1, 1)), RuleStarAttacks(SingleSlide(-1, 1))])
+        rules = [RuleStar(SingleSlide(0, 1)), RuleStar(SingleSlide(0, -1)),
+                RuleStar(SingleSlide(1, 0)), RuleStar(SingleSlide(-1, 0)),
+                RuleStar(SingleSlide(-1, -1)), RuleStar(SingleSlide(1, -1)),
+                RuleStar(SingleSlide(1, 1)), RuleStar(SingleSlide(-1, 1))]
+        rules.extend([RuleStarAttacks(SingleSlide(0, 1)), RuleStarAttacks(SingleSlide(0, -1)),
+                      RuleStarAttacks(SingleSlide(1, 0)), RuleStarAttacks(SingleSlide(-1, 0)),
+                     RuleStarAttacks(SingleSlide(-1, -1)), RuleStarAttacks(SingleSlide(1, -1)),
+                     RuleStarAttacks(SingleSlide(1, 1)), RuleStarAttacks(SingleSlide(-1, 1))])
         super().__init__(player, image, rules)
 
 
@@ -90,10 +94,20 @@ class Pawn(Piece):
 
 class King(Piece):
     def __init__(self, player, image):
-        rules = [Castling(), CombinedSlide([SingleSlide(0, -1)]), CombinedSlide([SingleSlide(1, -1)]), CombinedSlide([SingleSlide(-1, -1)]), CombinedSlide([SingleSlide(1, 0)]),
-                 CombinedSlide([SingleSlide(-1, 0)]), CombinedSlide([SingleSlide(0, 1)]), CombinedSlide([SingleSlide(1, 1)]), CombinedSlide([SingleSlide(-1, -1)])]
-        rules.extend([CombinedSlidingAttack([SingleSlide(0, -1)]), CombinedSlidingAttack([SingleSlide(1, -1)]), CombinedSlidingAttack([SingleSlide(-1, -1)]), CombinedSlidingAttack([SingleSlide(1, 0)]),
-                     CombinedSlidingAttack([SingleSlide(-1, 0)]), CombinedSlidingAttack([SingleSlide(0, 1)]), CombinedSlidingAttack([SingleSlide(1, 1)]), CombinedSlidingAttack([SingleSlide(-1, -1)])])
+        rules = [Castling(), CombinedSlide([SingleSlide(0, -1)]),
+                CombinedSlide([SingleSlide(1, -1)]),
+                CombinedSlide([SingleSlide(-1, -1)]), CombinedSlide([SingleSlide(1, 0)]),
+                 CombinedSlide([SingleSlide(-1, 0)]), CombinedSlide([SingleSlide(0, 1)]),
+                 CombinedSlide([SingleSlide(1, 1)]), CombinedSlide([SingleSlide(-1, -1)])]
+
+        rules.extend([CombinedSlidingAttack([SingleSlide(0, -1)]),
+                    CombinedSlidingAttack([SingleSlide(1, -1)]),
+                    CombinedSlidingAttack([SingleSlide(-1, -1)]),
+                    CombinedSlidingAttack([SingleSlide(1, 0)]),
+                    CombinedSlidingAttack([SingleSlide(-1, 0)]),
+                    CombinedSlidingAttack([SingleSlide(0, 1)]),
+                    CombinedSlidingAttack([SingleSlide(1, 1)]),
+                    CombinedSlidingAttack([SingleSlide(-1, -1)])])
 
         super().__init__(player, image, rules)
 

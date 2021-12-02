@@ -3,13 +3,7 @@ from move import Move
 
 class Rule():
     def get_moves(self, player, position, board, piece):
-        moves = self.generate_moves(player, position, board, piece)
-        if self.check(moves, board):
-            return moves
-        return []
-
-    def check(self, move, board):
-        return True
+        return self.generate_moves(player, position, board, piece)
 
     def generate_moves(self, player, position, board, piece):
         new_positions = self.generate_positions(player, position, board, piece)
@@ -69,7 +63,7 @@ class Jump(Rule):
         self.x_hop = x_hop
         self.y_hop = y_hop
 
-    def generate_positions(self, player, position, board, piece):
+    def generate_positions(self, player, position, board, _):
         y_hop = self.y_hop if player == 1 else -self.y_hop
         new_position = (position[0]+y_hop, position[1]+self.x_hop)
         if 0 < new_position[0] < board.dimension and 0 < new_position[1] < board.dimension:
@@ -114,7 +108,7 @@ class SingleSlide(Rule):
         self.x_increment = x_increment
         self.y_increment = y_increment
 
-    def generate_positions(self, player, position, board, piece):
+    def generate_positions(self, player, position, board, _):
         if player == 1:
             new_position = (position[0]+self.y_increment,
                             position[1]+self.x_increment)
@@ -164,7 +158,7 @@ class RuleStarAttacks(Rule):
 
 
 class EnPassant(Rule):
-    def generate_positions(self, player, position, board, piece):
+    def generate_positions(self, player, position, board, _):
         if player == 1:
             new_positions = [(position[0]-1, position[1]-1),
                              (position[0]-1, position[1]+1)]
@@ -186,11 +180,11 @@ class Castling(Rule):
         if piece.moved:
             return []
 
-        if board.inCheck():
+        if board.in_check():
             return []
 
         can_castle_left = True
-        if (board.state[position[0]][position[1]-1].is_empty() and board.state[position[0]][position[1]-2].is_empty() and board.state[position[0]][position[1]-3].moved == False) is False:
+        if (board.state[position[0]][position[1]-1].is_empty() and board.state[position[0]][position[1]-2].is_empty() and board.state[position[0]][position[1]-3].moved is False) is False:
             can_castle_left = False
         if board.square_under_attack((position[0], position[1]-1)) or board.square_under_attack((position[0], position[1]-2)):
             can_castle_left = False
@@ -198,7 +192,7 @@ class Castling(Rule):
             moves.append(Move(position, (position[0], position[1]-2), board))
 
         can_castle_right = True
-        if (board.state[position[0]][position[1]+1].is_empty() and board.state[position[0]][position[1]+2].is_empty() and board.state[position[0]][position[1]+3].moved == False) is False:
+        if (board.state[position[0]][position[1]+1].is_empty() and board.state[position[0]][position[1]+2].is_empty() and board.state[position[0]][position[1]+3].moved is False) is False:
             can_castle_right = False
         if board.square_under_attack((position[0], position[1]+1)) or board.square_under_attack((position[0], position[1]+2)):
             can_castle_right = False
