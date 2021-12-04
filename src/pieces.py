@@ -153,7 +153,7 @@ class SelectedSlideSquare(Piece):
         self.num = num
 
     def draw(self, screen, square_size, position):
-        p.draw.rect(screen, p.Color("red"), p.Rect(
+        p.draw.rect(screen, p.Color("green"), p.Rect(
             position[1]*square_size, position[0]*square_size, square_size, square_size))
         smallfont = p.font.SysFont('Corbel', 35)
         text = smallfont.render(f"{self.num}", True, p.Color("black"))

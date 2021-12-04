@@ -237,22 +237,23 @@ def settings():
                         lambda: customize_board(setting, screen), "Customize board")
         box2 = ClickBox(WIDHT-140, 40, 140, 40, setting.flip_slider,
                         "Slider" if setting.slider else "Jumper")
-        boxes = [box, box2, box3, box5, box6, box7, box8]
+        box4 = ClickBox(WIDHT-140, 280, 140, 40, setting.flip_attack, "Attack" if setting.attack else "Movement")
+        boxes = [box, box2, box3, box4, box5, box6, box7, box8]
         for event in p.event.get():
             location = p.mouse.get_pos()
             if event.type == QUIT:
                 running = False
 
-            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 280):
+            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 320):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
                 if setting.slider:
                     if col == 3 and row == 3:
                         setting.increase_index()
                     else:
-                        setting.board.set_slide_selected(row, col, setting.index)
+                        setting.board.set_slide_selected(row, col, setting.index, setting.attack)
                 else:
-                    setting.board.set_jump_selected(row, col)
+                    setting.board.set_jump_selected(row, col, setting.attack)
                 if selected_square == (row, col):
                     selected_square = ()
                     player_clicks = []

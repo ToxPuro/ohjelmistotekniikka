@@ -124,20 +124,20 @@ class Board():
         else:
             self.state[move.end_row][move.end_col] = self.pieces["bQ"]
 
-    def set_jump_selected(self, row, col):
+    def set_jump_selected(self, row, col, is_attack):
         if self.state[row][col].is_empty():
             self.state[row][col] = SelectedJumpSquare()
-            self.selected.append((row, col))
+            self.selected.append((row, col, is_attack))
         else:
-            self.selected.remove((row, col))
+            self.selected.remove((row, col, is_attack))
             self.state[row][col] = Empty_Space()
 
-    def set_slide_selected(self, row, col, index):
+    def set_slide_selected(self, row, col, index, is_attack):
         if self.state[row][col].is_empty():
             self.state[row][col] = SelectedSlideSquare(index)
-            self.selected.append((row, col, index))
+            self.selected.append((row, col, index, is_attack))
         else:
-            self.selected.remove((row, col, index))
+            self.selected.remove((row, col, index, is_attack))
             self.state[row][col] = Empty_Space()
 
     def delete_old_selected_squares(self):

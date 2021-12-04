@@ -12,6 +12,7 @@ class Setting():
     def __init__(self):
         self.piece_created = None
         self.slider = False
+        self.attack = False
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
         self.index = 1
@@ -63,9 +64,15 @@ class Setting():
         self.piece_created = None
         self.index = 1
 
+    def flip_attack(self):
+        self.attack = not self.attack
+        self.increase_index()
+
+
     def increase_index(self):
         self.index += 1
         self.saved.extend(self.board.selected)
+        print(self.saved)
         self.board.delete_old_selected_squares()
 
     def clear_initial_state(self):
@@ -112,44 +119,43 @@ class Setting():
         if self.time > 0:
             self.flash_box.draw(screen)
 
+    def generate_sliding_rules(self, index, is_attack):
+        coordinates = [x for x in self.saved if x[2] == index and x[3] == is_attack]
+        rules = []
+        current_coordinates = (3, 3)
+        while coordinates != []:
+            new_coordinates = [
+                (current_coordinates[0]+1, current_coordinates[1], index, is_attack),
+                (current_coordinates[0]-1, current_coordinates[1], index, is_attack),
+                (current_coordinates[0], current_coordinates[1]+1, index, is_attack),
+                (current_coordinates[0], current_coordinates[1]-1, index, is_attack),
+                (current_coordinates[0]-1, current_coordinates[1]-1, index, is_attack),
+                (current_coordinates[0]+1, current_coordinates[1]-1, index, is_attack),
+                (current_coordinates[0]-1, current_coordinates[1]+1, index, is_attack),
+                (current_coordinates[0]+1, current_coordinates[1]+1, index, is_attack),
+            ]
+
+            for coordinate in new_coordinates:
+                if coordinate in coordinates:
+                    difference = (
+                        coordinate[0] - current_coordinates[0], coordinate[1] - current_coordinates[1])
+                    current_coordinates = (coordinate[0], coordinate[1])
+                    rules.append(SingleSlide(
+                        difference[1], difference[0]))
+                    coordinates.remove(coordinate)
+                    break
+
+        return rules
+
     def save_sliding_piece(self):
+        print(self.saved)
         rules = []
         self.increase_index()
-        self.index = 1
-        for i in range(1, self.index+1):
-            index_rules = []
-
-            index_coordinates = [x for x in self.saved if x[2] == i]
-            current_coordinates = (3, 3)
-            while index_coordinates != []:
-                new_coordinates = [
-                  (current_coordinates[0]+1, current_coordinates[1], i),
-                  (current_coordinates[0]-1, current_coordinates[1], i),
-                  (current_coordinates[0], current_coordinates[1]+1, i),
-                  (current_coordinates[0], current_coordinates[1]-1, i),
-                  (current_coordinates[0]-1, current_coordinates[1]-1, i),
-                  (current_coordinates[0]+1, current_coordinates[1]-1, i),
-                  (current_coordinates[0]-1, current_coordinates[1]+1, i),
-                  (current_coordinates[0]+1, current_coordinates[1]+1, i),
-              ]
-
-                for coordinate in new_coordinates:
-                    if coordinate in index_coordinates:
-                        difference = (
-                            coordinate[0] - current_coordinates[0], coordinate[1] - current_coordinates[1])
-                        current_coordinates = (coordinate[0], coordinate[1])
-                        index_rules.append(SingleSlide(
-                            difference[1], difference[0]))
-                        index_coordinates.remove(coordinate)
-                        break
-
-            rules.append(CombinedSlide(index_rules))
-            rules.append(CombinedSlidingAttack(index_rules))
+        rules = [CombinedSlide(self.generate_sliding_rules(i, False)) for i in range(1, self.index+1)]
+        rules.extend([CombinedSlidingAttack(self.generate_sliding_rules(i, True)) for i in range(1, self.index+1)])
         self.set_current_piece(rules)
 
     def save_jump_piece(self):
-        rules = []
-        for selected_square in self.board.selected:
-            rules.append(Jump(selected_square[1]-3, selected_square[0]-3))
-            rules.append(JumpAttack(selected_square[1]-3, selected_square[0]-3))
+        rules = [Jump(selected_square[1]-3, selected_square[0]-3) for selected_square in self.saved if selected_square[2]==False]
+        rules.extend([JumpAttack(selected_square[1]-3, selected_square[0]-3) for selected_square in self.saved if selected_square[2] == True])
         self.set_current_piece(rules)
