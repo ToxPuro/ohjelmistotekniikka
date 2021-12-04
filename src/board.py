@@ -1,4 +1,4 @@
-from pieces import Empty_Space, EnPassantSquare, SelectedSquare
+from pieces import EmptySpace, EnPassantSquare, SelectedSquare
 from ui.board_ui import BoardUI
 
 class Board():
@@ -21,7 +21,7 @@ class Board():
 
     def make_move(self, move, simulation=False):
 
-        self.state[move.start_row][move.start_col] = Empty_Space()
+        self.state[move.start_row][move.start_col] = EmptySpace()
         self.state[move.end_row][move.end_col] = move.piece_moved
         self.move_log.append(move)
 
@@ -35,12 +35,12 @@ class Board():
             if move.piece_moved.is_king and move.end_col - move.start_col == 2:
                 self.state[move.start_row][move.start_col +
                                            1] = self.state[move.end_row][move.end_col+1]
-                self.state[move.end_row][move.end_col+1] = Empty_Space()
+                self.state[move.end_row][move.end_col+1] = EmptySpace()
 
             if move.piece_moved.is_king and move.end_col - move.start_col == -2:
                 self.state[move.start_row][move.start_col -
                                            1] = self.state[move.end_row][move.end_col-2]
-                self.state[move.end_row][move.end_col-2] = Empty_Space()
+                self.state[move.end_row][move.end_col-2] = EmptySpace()
 
             self.delete_en_passant_squares()
             if move.is_double_pawn_forward:
@@ -57,7 +57,7 @@ class Board():
             for col, _ in enumerate(self.state[row]):
                 piece = self.state[row][col]
                 # ugly implementation to sidestep infinite recursion where
-                if not (piece.is_king() and no_king) and player == piece.player:
+                if not (piece.is_king() and no_king and not piece.is_empty()) and player == piece.player:
                     piece_moves = piece.get_moves((row, col), self)
                     for move in piece_moves:
                         if move not in moves:
@@ -110,7 +110,7 @@ class Board():
             en_passant_square = self.en_passant_squares.pop()
             if self.state[en_passant_square[0]][en_passant_square[1]].is_en_passant():
                 self.state[en_passant_square[0]
-                           ][en_passant_square[1]] = Empty_Space()
+                           ][en_passant_square[1]] = EmptySpace()
 
     def create_en_passant_square(self, move):
         if self.turn == 1:
@@ -132,9 +132,9 @@ class Board():
             self.selected.append((row, col, index, is_attack, is_jump))
         else:
             self.selected.remove((row, col, index, is_attack, is_jump))
-            self.state[row][col] = Empty_Space()
+            self.state[row][col] = EmptySpace()
 
     def delete_old_selected_squares(self):
         for square in self.selected:
-            self.state[square[0]][square[1]] = Empty_Space()
+            self.state[square[0]][square[1]] = EmptySpace()
         self.selected = []

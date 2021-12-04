@@ -65,5 +65,3 @@ class TestRules(unittest.TestCase):
         castling = Castling()
         white_positions = castling.get_moves(1, (7,4), self.board, self.white_piece)
         self.assertEqual(white_positions, [Move((7,4), (7,6), self.board)])
-
-    

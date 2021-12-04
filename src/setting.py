@@ -1,13 +1,8 @@
 from board import Board
 from generate import generate_initial_state2, IMAGES
-from pieces import Rook, Knight, Empty_Space, Bishop, King, Pawn, Piece, Queen
+from pieces import Rook, Knight, EmptySpace, Bishop, King, Pawn, Piece, Queen
 from rules import Jump, JumpAttack, CombinedSlide, CombinedSlidingAttack, SingleSlide
 from ui.input_box import ClickBox
-WIDHT = HEIGHT = 512
-DIMENSION = 8
-SQ_SIZE = HEIGHT // DIMENSION
-MAX_FPS = 15
-SQ_SIZE = 64
 
 class Setting():
     def __init__(self):
@@ -22,7 +17,7 @@ class Setting():
         self.flash_box = None
         self.pieces = {"bR": lambda: Rook(2, IMAGES["bR"]), "bN": lambda: Knight(2, IMAGES["bN"]), "bB": lambda: Bishop(2, IMAGES["bB"]), "bQ": lambda: Queen(2, IMAGES["bQ"]), "bK": lambda: King(2, IMAGES["bK"]),
                        "wR": lambda: Rook(1, IMAGES["wR"]), "wN": lambda: Knight(1, IMAGES["wN"]), "wB": lambda: Bishop(1, IMAGES["wB"]), "wQ": lambda: Queen(1, IMAGES["wQ"]), "wK": lambda: King(1, IMAGES["wK"]),
-                       "bp": lambda: Pawn(2, IMAGES["bp"]), "wp": lambda: Pawn(1, IMAGES["wp"]), "empty": lambda: Empty_Space()
+                       "bp": lambda: Pawn(2, IMAGES["bp"]), "wp": lambda: Pawn(1, IMAGES["wp"]), "empty": lambda: EmptySpace()
                        }
 
         self.current_piece = 0
@@ -131,11 +126,11 @@ class Setting():
             self.flash_box.draw(screen)
 
     def get_index_rules(self, index, is_attack):
-        coordinates = [x for x in self.saved if x[2] == index and x[3] == is_attack and x[4] == False]
+        coordinates = [x for x in self.saved if x[2] == index and x[3] is is_attack and x[4] is False]
         rules = []
         current_coordinates = (3, 3)
         while coordinates != []:
-            
+
             ## This boolean flag exists to notice when there are only incorrect leftover squares left
             leftovers = True
             new_coordinates = [
@@ -182,8 +177,8 @@ class Setting():
 
     def generate_jump_rules(self):
         self.save_chosen_squares()
-        rules = [Jump(x[1]-3, x[0]-3) for x in self.saved if x[3]==False and x[4] == True]
-        rules.extend([JumpAttack(x[1]-3, x[0]-3) for x in self.saved if x[3] == True and x[4] == True])
+        rules = [Jump(x[1]-3, x[0]-3) for x in self.saved if x[3] is False and x[4] is True]
+        rules.extend([JumpAttack(x[1]-3, x[0]-3) for x in self.saved if x[3] is True and x[4] is True])
         return rules
 
     def copy_to_other(self):

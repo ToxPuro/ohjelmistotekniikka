@@ -114,8 +114,7 @@ class King(Piece):
     def is_king(self):
         return True
 
-
-class Empty_Space(Piece):
+class EmptySpace():
     def __init__(self):
         self.player = 0
         self.moved = False
@@ -127,11 +126,14 @@ class Empty_Space(Piece):
     def is_empty(self):
         return True
 
-    def get_moves(self, position, board):
-        return []
+    def is_king(self):
+        return False
+
+    def is_en_passant(self):
+        return False
 
 
-class EnPassantSquare(Empty_Space):
+class EnPassantSquare(EmptySpace):
     def is_en_passant(self):
         return True
 
@@ -139,7 +141,7 @@ class EnPassantSquare(Empty_Space):
         pass
 
 
-class SelectedSquare(Piece):
+class SelectedSquare():
     def __init__(self, is_attack):
         self.moved = False
         self.is_attack = is_attack

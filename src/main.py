@@ -10,14 +10,8 @@ from ui.input_box import ClickBox, InputBox
 import db
 from setting import Setting
 from generate import generate_initial_state, generate_initial_state2
+from configs import WIDHT, HEIGHT, SQ_SIZE, MAX_FPS
 
-
-WIDHT = HEIGHT = 512
-DIMENSION = 8
-SQ_SIZE = HEIGHT // DIMENSION
-MAX_FPS = 15
-
-SQ_SIZE = 64
 
 
 
