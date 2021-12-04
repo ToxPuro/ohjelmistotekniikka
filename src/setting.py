@@ -2,6 +2,7 @@ from board import Board
 from generate import generate_initial_state2, IMAGES
 from pieces import Rook, Knight, Empty_Space, Bishop, King, Pawn, Piece, Queen
 from rules import Jump, JumpAttack, CombinedSlide, CombinedSlidingAttack, SingleSlide
+from ui.input_box import ClickBox
 WIDHT = HEIGHT = 512
 DIMENSION = 8
 SQ_SIZE = HEIGHT // DIMENSION
@@ -13,6 +14,7 @@ class Setting():
         self.piece_created = None
         self.slider = False
         self.attack = False
+        self.menu = False
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
         self.index = 1
@@ -57,22 +59,31 @@ class Setting():
             2, IMAGES[black_piece_name], rules, is_king)
         self.piece_created = Piece(1, IMAGES[white_piece_name], rules, is_king)
 
-    def flip_slider(self):
-        self.slider = not self.slider
+
+    def reset(self):
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
         self.piece_created = None
         self.index = 1
 
+    def flip_slider(self):
+        self.slider = not self.slider
+        self.increase_index()
+
     def flip_attack(self):
         self.attack = not self.attack
         self.increase_index()
 
+    def toggle_menu(self):
+        self.menu = not self.menu
+
 
     def increase_index(self):
         self.index += 1
+        self.save_chosen_squares()
+
+    def save_chosen_squares(self):
         self.saved.extend(self.board.selected)
-        print(self.saved)
         self.board.delete_old_selected_squares()
 
     def clear_initial_state(self):
@@ -119,24 +130,28 @@ class Setting():
         if self.time > 0:
             self.flash_box.draw(screen)
 
-    def generate_sliding_rules(self, index, is_attack):
-        coordinates = [x for x in self.saved if x[2] == index and x[3] == is_attack]
+    def get_index_rules(self, index, is_attack):
+        coordinates = [x for x in self.saved if x[2] == index and x[3] == is_attack and x[4] == False]
         rules = []
         current_coordinates = (3, 3)
         while coordinates != []:
+            
+            ## This boolean flag exists to notice when there are only incorrect leftover squares left
+            leftovers = True
             new_coordinates = [
-                (current_coordinates[0]+1, current_coordinates[1], index, is_attack),
-                (current_coordinates[0]-1, current_coordinates[1], index, is_attack),
-                (current_coordinates[0], current_coordinates[1]+1, index, is_attack),
-                (current_coordinates[0], current_coordinates[1]-1, index, is_attack),
-                (current_coordinates[0]-1, current_coordinates[1]-1, index, is_attack),
-                (current_coordinates[0]+1, current_coordinates[1]-1, index, is_attack),
-                (current_coordinates[0]-1, current_coordinates[1]+1, index, is_attack),
-                (current_coordinates[0]+1, current_coordinates[1]+1, index, is_attack),
+                (current_coordinates[0]+1, current_coordinates[1], index, is_attack, False),
+                (current_coordinates[0]-1, current_coordinates[1], index, is_attack, False),
+                (current_coordinates[0], current_coordinates[1]+1, index, is_attack, False),
+                (current_coordinates[0], current_coordinates[1]-1, index, is_attack, False),
+                (current_coordinates[0]-1, current_coordinates[1]-1, index, is_attack, False),
+                (current_coordinates[0]+1, current_coordinates[1]-1, index, is_attack, False),
+                (current_coordinates[0]-1, current_coordinates[1]+1, index, is_attack, False),
+                (current_coordinates[0]+1, current_coordinates[1]+1, index, is_attack, False),
             ]
 
             for coordinate in new_coordinates:
                 if coordinate in coordinates:
+                    leftovers = False
                     difference = (
                         coordinate[0] - current_coordinates[0], coordinate[1] - current_coordinates[1])
                     current_coordinates = (coordinate[0], coordinate[1])
@@ -144,18 +159,37 @@ class Setting():
                         difference[1], difference[0]))
                     coordinates.remove(coordinate)
                     break
-
+            if leftovers:
+                coordinates.pop(0)
         return rules
 
-    def save_sliding_piece(self):
+    def set_flash_box(self, string):
+        self.flash_box = ClickBox(0, 0, 140, 40, lambda: None, string)
+        self.time = 2000
+
+    def save_piece(self):
         print(self.saved)
-        rules = []
-        self.increase_index()
-        rules = [CombinedSlide(self.generate_sliding_rules(i, False)) for i in range(1, self.index+1)]
-        rules.extend([CombinedSlidingAttack(self.generate_sliding_rules(i, True)) for i in range(1, self.index+1)])
+        self.set_flash_box("Saved")
+        rules = self.generate_sliding_rules()
+        rules.extend(self.generate_jump_rules())
         self.set_current_piece(rules)
 
-    def save_jump_piece(self):
-        rules = [Jump(selected_square[1]-3, selected_square[0]-3) for selected_square in self.saved if selected_square[2]==False]
-        rules.extend([JumpAttack(selected_square[1]-3, selected_square[0]-3) for selected_square in self.saved if selected_square[2] == True])
-        self.set_current_piece(rules)
+    def generate_sliding_rules(self):
+        self.increase_index()
+        rules = [CombinedSlide(self.get_index_rules(i, False)) for i in range(1, self.index+1)]
+        rules.extend([CombinedSlidingAttack(self.get_index_rules(i, True)) for i in range(1, self.index+1)])
+        return rules
+
+    def generate_jump_rules(self):
+        self.save_chosen_squares()
+        rules = [Jump(x[1]-3, x[0]-3) for x in self.saved if x[3]==False and x[4] == True]
+        rules.extend([JumpAttack(x[1]-3, x[0]-3) for x in self.saved if x[3] == True and x[4] == True])
+        return rules
+
+    def copy_to_other(self):
+        array_to_copy = [x for x in self.saved if x[3] == self.attack]
+        array_to_copy.extend([(x[0], x[1], x[2], not x[3]) for x in array_to_copy])
+        self.saved = array_to_copy
+        self.save_piece()
+
+

@@ -94,15 +94,6 @@ def start_the_game(setting=None):
         p.display.flip()
 
 
-def save_piece(setting):
-    setting.flash_box = ClickBox(0, 0, 140, 40, lambda: 1, "Saved")
-    setting.time = 2000
-    if setting.slider:
-        setting.save_sliding_piece()
-    else:
-        setting.save_jump_piece()
-
-
 
 
 
@@ -220,13 +211,13 @@ def settings():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     running = True
-    selected_square = ()
-    player_clicks = []
 
     while running:
         box = ClickBox(WIDHT-140, 0, 140, 40,
                        lambda: start_the_game(setting), "Play")
-        box3 = ClickBox(WIDHT-140, 80, 140, 40, lambda: save_piece(setting), "Save")
+        box11 = ClickBox(WIDHT-140, 40, 140, 40, setting.toggle_menu, "Menu")
+        box12 = ClickBox(WIDHT-140, 400, 140, 40, setting.toggle_menu, "Hide")
+        box3 = ClickBox(WIDHT-140, 80, 140, 40, setting.save_piece, "Save")
         box5 = ClickBox(WIDHT-140, 120, 140, 40,
                         lambda: upload(screen, setting), "Upload")
         box6 = ClickBox(WIDHT-140, 160, 140, 40,
@@ -238,28 +229,22 @@ def settings():
         box2 = ClickBox(WIDHT-140, 40, 140, 40, setting.flip_slider,
                         "Slider" if setting.slider else "Jumper")
         box4 = ClickBox(WIDHT-140, 280, 140, 40, setting.flip_attack, "Attack" if setting.attack else "Movement")
-        boxes = [box, box2, box3, box4, box5, box6, box7, box8]
+        box9 = ClickBox(WIDHT-140, 320, 140, 40, setting.copy_to_other, "Copy")
+        box10 = ClickBox(WIDHT-140, 360, 140, 40, setting.reset, "Reset")
+        boxes = [box, box2, box3, box4, box5, box6, box7, box8, box9, box10, box12] if setting.menu else [box, box11]
         for event in p.event.get():
             location = p.mouse.get_pos()
             if event.type == QUIT:
                 running = False
 
-            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > 320):
+            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > (440 if setting.menu else 80)):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
-                if setting.slider:
-                    if col == 3 and row == 3:
+                if col == 3 and row == 3:
+                    if setting.slider and col == 3:
                         setting.increase_index()
-                    else:
-                        setting.board.set_slide_selected(row, col, setting.index, setting.attack)
                 else:
-                    setting.board.set_jump_selected(row, col, setting.attack)
-                if selected_square == (row, col):
-                    selected_square = ()
-                    player_clicks = []
-                else:
-                    selected_square = (row, col)
-                    player_clicks.append(selected_square)
+                    setting.board.set_selected(row, col, setting.index, setting.attack, not setting.slider)
 
             else:
                 for box in boxes:

@@ -1,4 +1,4 @@
-from pieces import Empty_Space, EnPassantSquare, SelectedJumpSquare, SelectedSlideSquare
+from pieces import Empty_Space, EnPassantSquare, SelectedSquare
 from ui.board_ui import BoardUI
 
 class Board():
@@ -59,7 +59,9 @@ class Board():
                 # ugly implementation to sidestep infinite recursion where
                 if not (piece.is_king() and no_king) and player == piece.player:
                     piece_moves = piece.get_moves((row, col), self)
-                    moves.extend(piece_moves)
+                    for move in piece_moves:
+                        if move not in moves:
+                            moves.append(move)
         return moves
 
     def get_all_valid_moves(self):
@@ -124,20 +126,12 @@ class Board():
         else:
             self.state[move.end_row][move.end_col] = self.pieces["bQ"]
 
-    def set_jump_selected(self, row, col, is_attack):
+    def set_selected(self, row, col, index, is_attack, is_jump):
         if self.state[row][col].is_empty():
-            self.state[row][col] = SelectedJumpSquare()
-            self.selected.append((row, col, is_attack))
+            self.state[row][col] = SelectedSquare(is_attack)
+            self.selected.append((row, col, index, is_attack, is_jump))
         else:
-            self.selected.remove((row, col, is_attack))
-            self.state[row][col] = Empty_Space()
-
-    def set_slide_selected(self, row, col, index, is_attack):
-        if self.state[row][col].is_empty():
-            self.state[row][col] = SelectedSlideSquare(index)
-            self.selected.append((row, col, index, is_attack))
-        else:
-            self.selected.remove((row, col, index, is_attack))
+            self.selected.remove((row, col, index, is_attack, is_jump))
             self.state[row][col] = Empty_Space()
 
     def delete_old_selected_squares(self):
