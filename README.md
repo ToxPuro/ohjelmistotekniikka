@@ -6,6 +6,8 @@ The game is a chess game where users can make their own chess pieces to play wit
 Current state of code is pretty messy, trying to prototype will refactor later
 
 [Arkkitehtuuri](https://github.com/ToxPuro/ohjelmistotekniikka/tree/main/documentation/arkkitehtuuri.md)
+[Tuntikirjanpito](https://github.com/ToxPuro/ohjelmistotekniikka/tree/main/documentation/tuntikirjanpito.md)
+[Määrittelydokumentti](https://github.com/ToxPuro/ohjelmistotekniikka/tree/main/documentation/maarittelydokumentti.md)
 
 Download dependencies with poetry install
 
