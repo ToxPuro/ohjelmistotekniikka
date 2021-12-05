@@ -1,5 +1,5 @@
 import pygame as pg
-from pygame.constants import MOUSEBUTTONDOWN, K_RETURN, K_BACKSPACE
+from pygame.constants import MOUSEBUTTONDOWN, K_RETURN, K_BACKSPACE, KEYDOWN
 
 
 pg.init()
