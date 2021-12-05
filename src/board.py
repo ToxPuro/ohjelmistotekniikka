@@ -101,7 +101,6 @@ class Board():
                     player, no_king=True)
                 for move in opponents_moves:
                     if move.end_row == position[0] and move.end_col == position[1]:
-                        print("under attack")
                         return True
         return False
 
