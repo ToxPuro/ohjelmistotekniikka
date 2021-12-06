@@ -130,9 +130,9 @@ def download(screen, setting):
         clock.tick(30)
 
 
-def upload(screen, setting):
+def input_phase(screen, func, input_name):
     clock = p.time.Clock()
-    name_box = ClickBox(0, 0, 140, 40, lambda: None, "Name")
+    name_box = ClickBox(0, 0, 140, 40, lambda: None, input_name)
     input_box = InputBox(0, 40, 140, 32)
     boxes = [input_box, name_box]
 
@@ -145,8 +145,7 @@ def upload(screen, setting):
             name = input_box.handle_event(event)
             if name is not None and name != '':
                 done = True
-                db.upload_piece(name, setting.piece_created.rules)
-
+                func(name)
         input_box.update()
         for box in boxes:
             box.draw(screen)
@@ -157,6 +156,7 @@ def upload(screen, setting):
 
 def customize_board(setting, screen):
     done = False
+    clock = p.time.Clock()
     setting.clear_initial_state()
     initial_state, pieces = generate_initial_state(setting)
     setting.board = Board(initial_state, pieces)
@@ -165,7 +165,16 @@ def customize_board(setting, screen):
 
     def fun():
         nonlocal done
-        done = True
+        kings = 0
+        for row, _ in enumerate(setting.board.state):
+            for col, _ in enumerate(setting.board.state[row]):
+                piece = setting.board.state[row][col]
+                if piece.is_king():
+                    kings += 1
+        if kings==2:
+            done = True
+        else:
+            setting.set_flash_box("One king")
 
     box2 = ClickBox(WIDHT-140, 40, 140, 40, fun, "Done")
     boxes = [box1, box2]
@@ -192,6 +201,8 @@ def customize_board(setting, screen):
         setting.board.draw_game_state(screen)
         for box in boxes:
             box.draw(screen)
+        setting.time -= clock.tick(MAX_FPS)
+        setting.flash_text(screen)
         p.display.flip()
 
     initial_state, pieces = generate_initial_state2()
@@ -199,21 +210,30 @@ def customize_board(setting, screen):
 
 
 def settings():
-    screen = p.display.set_mode((WIDHT, HEIGHT))
+    
     setting = Setting()
-
-    clock = p.time.Clock()
+    old_width = setting.width
+    screen = p.display.set_mode((setting.width, setting.height))
     screen.fill(p.Color("white"))
+    clock = p.time.Clock()
+    
     running = True
 
     while running:
+
+        print(setting.width)
+        if old_width != setting.width:
+            screen = p.display.set_mode((setting.width, setting.height))
+            old_width = setting.width
+
         box = ClickBox(WIDHT-140, 0, 140, 40,
                        lambda: start_the_game(setting), "Play")
         box11 = ClickBox(WIDHT-140, 40, 140, 40, setting.toggle_menu, "Menu")
         box12 = ClickBox(WIDHT-140, 400, 140, 40, setting.toggle_menu, "Hide")
         box3 = ClickBox(WIDHT-140, 80, 140, 40, setting.save_piece, "Save")
+        upload_func = lambda name: db.upload_piece(name, setting.piece_created.rules)
         box5 = ClickBox(WIDHT-140, 120, 140, 40,
-                        lambda: upload(screen, setting), "Upload")
+                        lambda: input_phase(screen, upload_func, "Name" ), "Upload")
         box6 = ClickBox(WIDHT-140, 160, 140, 40,
                         lambda: download(screen, setting), "Download")
         box7 = ClickBox(WIDHT-140, 200, 140, 40,
@@ -225,13 +245,15 @@ def settings():
         box4 = ClickBox(WIDHT-140, 280, 140, 40, setting.flip_attack, "Attack" if setting.attack else "Movement")
         box9 = ClickBox(WIDHT-140, 320, 140, 40, setting.copy_to_other, "Copy")
         box10 = ClickBox(WIDHT-140, 360, 140, 40, setting.reset, "Reset")
-        boxes = [box, box2, box3, box4, box5, box6, box7, box8, box9, box10, box12] if setting.menu else [box, box11]
+        set_dimension_func = lambda dimension: setting.set_board_dimension(int(dimension))
+        box13 = ClickBox(WIDHT-140, 440, 140, 40, lambda: input_phase(screen, set_dimension_func, "Dimension"), "Dimension")
+        boxes = [box, box2, box3, box4, box5, box6, box7, box8, box9, box10, box12, box13] if setting.menu else [box, box11]
         for event in p.event.get():
             location = p.mouse.get_pos()
             if event.type == QUIT:
                 running = False
 
-            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > (440 if setting.menu else 80)):
+            elif event.type == MOUSEBUTTONDOWN and (WIDHT-140 > location[0] or location[1] > (480 if setting.menu else 80)):
                 col = location[0]//SQ_SIZE
                 row = location[1]//SQ_SIZE
                 if col == 3 and row == 3:

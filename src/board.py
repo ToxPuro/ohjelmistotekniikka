@@ -15,7 +15,9 @@ class Board():
         self.selected = []
         self.board_ui = BoardUI()
 
-
+    def set_dimension(self, new_dimension):
+        self.dimension = new_dimension
+        
     def draw_game_state(self, screen, valid_moves=[], selected_square=()):
         self.board_ui.draw_game_state(screen, valid_moves, selected_square, self)
 

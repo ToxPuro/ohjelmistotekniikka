@@ -11,20 +11,12 @@ def generate_initial_state(setting):
     return initial_state, pieces
 
 
-def generate_initial_state2():
+def generate_initial_state2(dimension):
+
     load_images()
     pieces = {"bQ": Queen(2, IMAGES["bQ"]), "wQ": Queen(1, IMAGES["wQ"])}
-    initial_state = [
-        [EmptySpace() for i in range(8)],
-        [EmptySpace() for i in range(8)],
-        [EmptySpace() for i in range(8)],
-        [EmptySpace(), EmptySpace(), EmptySpace(), Pawn(1, IMAGES["wp"]),
-         EmptySpace(), EmptySpace(), EmptySpace(), EmptySpace()],
-        [EmptySpace() for i in range(8)],
-        [EmptySpace() for i in range(8)],
-        [EmptySpace() for i in range(8)],
-        [EmptySpace() for i in range(8)],
-    ]
+    initial_state = [[EmptySpace() for i in range(dimension)] for i in range(dimension)]
+    initial_state[3][3] = Pawn(1, IMAGES["wp"])
 
     return initial_state, pieces
 
@@ -34,4 +26,4 @@ def load_images():
               "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load(
-            f"./images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
+            f"../images/{piece}.png"), (SQ_SIZE, SQ_SIZE))

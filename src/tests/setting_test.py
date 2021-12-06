@@ -33,3 +33,31 @@ class TestSetting(unittest.TestCase):
         self.assertEqual(self.setting.piece_created.rules[0].rules[0].y_increment, -1)
         self.assertEqual(self.setting.piece_created.rules[0].rules[1].x_increment, 1)
         self.assertEqual(len(self.setting.piece_created.rules[0].rules), 2)
+
+    def test_increase_initial_state(self):
+        self.setting.increase_initial_state()
+        self.assertEqual(self.setting.initial_state,
+        [
+            ["empty" for i in range(10)],
+            ["empty","bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR","empty"],
+            ["empty","bp","bp","bp","bp","bp","bp","bp","bp","empty"],
+            ["empty" for i in range(10)],
+            ["empty" for i in range(10)],
+            ["empty" for i in range(10)],
+            ["empty"for i in range(10)],
+            ["empty","wp","wp","wp","wp","wp","wp","wp","wp","empty"],
+            ["empty","wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR","empty"],
+            ["empty" for i in range(10)]
+        ])
+
+    def test_decrease_initial_state(self):
+        self.setting.decrease_initial_state()
+        self.assertEqual(self.setting.initial_state,
+        [
+            ["bp","bp","bp","bp","bp","bp"],
+            ["empty" for i in range(6)],
+            ["empty" for i in range(6)],
+            ["empty" for i in range(6)],
+            ["empty"for i in range(6)],
+            ["wp","wp","wp","wp","wp","wp"],
+        ])

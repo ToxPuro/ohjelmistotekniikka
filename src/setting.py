@@ -2,26 +2,13 @@ from board import Board
 from generate import generate_initial_state2, IMAGES
 from pieces import Rook, Knight, EmptySpace, Bishop, King, Pawn, Piece, Queen
 from rules import Jump, JumpAttack, CombinedSlide, CombinedSlidingAttack, SingleSlide
-from ui.input_box import ClickBox
-
+from configs import SQ_SIZE
 class Setting():
     def __init__(self):
         self.piece_created = None
         self.slider = False
         self.attack = False
         self.menu = False
-        initial_state, pieces = generate_initial_state2()
-        self.board = Board(initial_state, pieces)
-        self.index = 1
-        self.saved = []
-        self.flash_box = None
-        self.pieces = {"bR": lambda: Rook(2, IMAGES["bR"]), "bN": lambda: Knight(2, IMAGES["bN"]), "bB": lambda: Bishop(2, IMAGES["bB"]), "bQ": lambda: Queen(2, IMAGES["bQ"]), "bK": lambda: King(2, IMAGES["bK"]),
-                       "wR": lambda: Rook(1, IMAGES["wR"]), "wN": lambda: Knight(1, IMAGES["wN"]), "wB": lambda: Bishop(1, IMAGES["wB"]), "wQ": lambda: Queen(1, IMAGES["wQ"]), "wK": lambda: King(1, IMAGES["wK"]),
-                       "bp": lambda: Pawn(2, IMAGES["bp"]), "wp": lambda: Pawn(1, IMAGES["wp"]), "empty": lambda: EmptySpace()
-                       }
-
-        self.current_piece = 0
-        self.time = 0
 
         self.initial_state = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -34,11 +21,61 @@ class Setting():
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ]
 
+
+
+        initial_state, pieces = generate_initial_state2(len(self.initial_state))
+        self.board = Board(initial_state, pieces)
+        self.index = 1
+        self.height = self.width = SQ_SIZE*8
+        self.saved = []
+        self.flash_box = None
+        self.pieces = {"bR": lambda: Rook(2, IMAGES["bR"]), "bN": lambda: Knight(2, IMAGES["bN"]), "bB": lambda: Bishop(2, IMAGES["bB"]), "bQ": lambda: Queen(2, IMAGES["bQ"]), "bK": lambda: King(2, IMAGES["bK"]),
+                       "wR": lambda: Rook(1, IMAGES["wR"]), "wN": lambda: Knight(1, IMAGES["wN"]), "wB": lambda: Bishop(1, IMAGES["wB"]), "wQ": lambda: Queen(1, IMAGES["wQ"]), "wK": lambda: King(1, IMAGES["wK"]),
+                       "bp": lambda: Pawn(2, IMAGES["bp"]), "wp": lambda: Pawn(1, IMAGES["wp"]), "empty": lambda: EmptySpace()
+                       }
+
+        self.current_piece = 0
+        self.time = 0
+
+
     def get_initial_state(self):
         initial_state = []
         for row in self.initial_state:
             initial_state.append([self.pieces[piece]()for piece in row])
         return initial_state
+
+    def increase_initial_state(self):
+        initial_state = [["empty" for i in range(len(self.initial_state) +2)]]
+        for i in range(len(self.initial_state)):
+            row = ["empty"]
+            row.extend(self.initial_state[i])
+            row.append("empty")
+            initial_state.append(row)
+        initial_state.append(["empty" for i in range(len(self.initial_state) +2)])
+        self.initial_state = initial_state
+
+    def decrease_initial_state(self):
+        self.initial_state.pop(0)
+        self.initial_state.pop(-1)
+        for i in range(len(self.initial_state)):
+            row = self.initial_state[i]
+            row.pop(0)
+            row.pop(-1)
+            self.initial_state[i] = row
+    
+    def set_board_dimension(self, new_dimension):
+        difference = (new_dimension //2) - (len(self.initial_state) //2)
+        if difference < 0:
+            for i in range(-difference):
+                self.decrease_initial_state()
+        else:
+            for i in range(difference):
+                self.increase_initial_state()
+
+        self.width = self.height = SQ_SIZE*len(self.initial_state)
+        self.board.dimension = len(self.initial_state)
+        self.board.state = generate_initial_state2(len(self.initial_state))[0]
+
 
     def set_current_piece(self, rules):
 

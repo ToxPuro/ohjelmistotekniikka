@@ -36,6 +36,9 @@ class Piece():
     def is_en_passant(self):
         return False
 
+    def is_pawn(self):
+        return False
+
 
 class Knight(Piece):
     def __init__(self, player, image):
@@ -132,6 +135,8 @@ class EmptySpace():
     def is_en_passant(self):
         return False
 
+    def is_pawn(self):
+        return False
 
 class EnPassantSquare(EmptySpace):
     def is_en_passant(self):
