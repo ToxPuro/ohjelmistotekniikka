@@ -20,9 +20,10 @@ def get_db_pieces():
     collection_name = dbname["piece_rules"]
     return collection_name.find()
 
-def upload_piece(name, rules):
+def upload_piece(params):
+
     json = {
-        "name": name
+        "name": params["name"]
     }
-    json["rules"] = [rule.to_json() for rule in rules]
+    json["rules"] = [rule.to_json() for rule in params["rules"]]
     insert_piece_to_db(json)
