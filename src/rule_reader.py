@@ -2,8 +2,15 @@ from rules import CombinedSlide, Jump, JumpAttack, SingleSlide, CombinedSlidingA
 
 
 class RuleReader():
-
     def json_to_rule(self, json):
+        """Convert JSON that comes from DB to the Rule object it belongs to
+
+        Args:
+            json: JSON represantation of the rule in DB
+
+        Returns:
+            Rule: The extracted rule from the JSON
+        """
         if json["type"] == "single_slide":
             return SingleSlide(json["x_increment"], json["y_increment"])
 

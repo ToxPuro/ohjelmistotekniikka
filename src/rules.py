@@ -2,18 +2,37 @@ from move import Move
 
 
 class Rule():
+    """Superclass for all rules that pieces use
+    """
     def get_moves(self, player, position, board, piece):
+        """Wrapper around generate_moves, that currently does nothing
+        """
         return self.generate_moves(player, position, board, piece)
 
     def generate_moves(self, player, position, board, piece):
+        """Generate all possible moves that the rule allows
+
+        Args:
+            player: Current player to generate the moves
+            position: Position of the piece where to generate moves
+            board: Current state of the board
+            piece: The piece to generate moves
+
+        Returns:
+            moves [Move]: all possible moves that the rule allows
+        """
         new_positions = self.generate_positions(player, position, board, piece)
         return [Move(position, new_position, board) for new_position in new_positions]
 
     def to_json(self):
+        """Function used in child classes to represent the rules in json
+        """
         pass
 
 
 class CombinedSlidingAttack(Rule):
+    """Class for combined sliding attack
+    """
     def __init__(self, rules):
         self.rules = rules
 

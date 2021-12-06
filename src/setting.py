@@ -5,6 +5,7 @@ from rules import Jump, JumpAttack, CombinedSlide, CombinedSlidingAttack, Single
 from ui.input_box import ClickBox
 from configs import SQ_SIZE
 class Setting():
+    """Class that holds the current settings and the functionality to change them"""
     def __init__(self):
         self.piece_created = None
         self.slider = False
@@ -40,12 +41,19 @@ class Setting():
 
 
     def get_initial_state(self):
+        """Function to get the initial state based on the settings
+
+        Returns:
+            Returns the initial state based on the current settings
+        """
         initial_state = []
         for row in self.initial_state:
             initial_state.append([self.pieces[piece]()for piece in row])
         return initial_state
 
     def increase_initial_state(self):
+        """Adds one square to each direction to the initial state which carries over to the board
+        """
         initial_state = [["empty" for i in range(len(self.initial_state) +2)]]
         for i in range(len(self.initial_state)):
             row = ["empty"]
@@ -56,6 +64,8 @@ class Setting():
         self.initial_state = initial_state
 
     def decrease_initial_state(self):
+        """Removes one square to each direction to the initial state which carries over to the board
+        """
         self.initial_state.pop(0)
         self.initial_state.pop(-1)
         for i in range(len(self.initial_state)):
@@ -65,6 +75,11 @@ class Setting():
             self.initial_state[i] = row
     
     def set_board_dimension(self, new_dimension):
+        """Sets the settings board dimension to the new dimension
+
+        Args:
+            new_dimension (int): The new desired dimension. Needs to multiple of 2
+        """
         difference = (new_dimension //2) - (len(self.initial_state) //2)
         if difference < 0:
             for i in range(-difference):
@@ -79,6 +94,11 @@ class Setting():
 
 
     def set_current_piece(self, rules):
+        """Sets the piece under modification rules to be correct
+
+        Args:
+            rules [Rule]: rules for the piece under modification
+        """
 
         is_king = (self.current_piece == 5)
 
@@ -94,6 +114,8 @@ class Setting():
 
 
     def reset(self):
+        """Reset all modified settings to be the initial settings
+        """
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
         self.piece_created = None
@@ -116,40 +138,44 @@ class Setting():
         self.index = 1
 
     def flip_slider(self):
+        """Change whether sliding or jumping moves are to be added
+        """
         self.slider = not self.slider
         self.increase_index()
 
     def flip_attack(self):
+        """Change whether movement or attack moves are to be added
+        """
         self.attack = not self.attack
         self.increase_index()
 
     def toggle_menu(self):
+        """Toggle whether the menu is visible
+        """
         self.menu = not self.menu
 
 
     def increase_index(self):
+        """Increase the index required for sliding moves
+        """
         self.index += 1
         self.save_chosen_squares()
 
 
 
     def save_chosen_squares(self):
+        """Save the squares in the setting board to setting class itself
+        """
         self.saved.extend(self.board.selected)
         self.board.delete_old_selected_squares()
 
     def clear_initial_state(self):
-        self.initial_state = [
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)],
-            ["empty" for i in range(8)]
-        ]
+        """Set initial state to be completely empty
+        """
+        self.initial_state = [["empty" for i in range(len(self.initial_state))] for i in range(len(self.initial_state))]
 
     def get_piece_name_from_index(self, index):
+        """Map to represent piece names with ints""" 
         index_to_pieces = {
             0: "wp",
             1: "wR",
@@ -169,19 +195,37 @@ class Setting():
         return index_to_pieces[index]
 
     def increment_current_piece(self):
+        """Increment the index that tracks the current piece
+        """
         self.current_piece = (1 + self.current_piece) % 6
 
     def next_piece(self):
+        """Change the current piece to the next one
+        """
         self.increment_current_piece()
         next_piece = self.pieces[self.get_piece_name_from_index(
             self.current_piece)]()
         self.board.state[3][3] = next_piece
 
     def flash_text(self, screen):
+        """Flash text in the screen
+
+        Args:
+            screen: Pygame screen to flash on
+        """
         if self.time > 0:
             self.flash_box.draw(screen)
 
     def get_index_rules(self, index, is_attack):
+        """Get the sliding rules with specific index
+
+        Args:
+            index (int): the index of which rules to generate
+            is_attack (bool): Whether the slides correspond to attack move
+
+        Returns:
+            List of single slides from the saved rules with given index
+        """
         coordinates = [x for x in self.saved if x[2] == index and x[3] is is_attack and x[4] is False]
         rules = []
         current_coordinates = (3, 3)
@@ -215,31 +259,52 @@ class Setting():
         return rules
 
     def set_flash_box(self, string):
+        """Set the flash box that is used to flash text
+
+        Args:
+            string (string): String to flash in the box
+        """
         self.flash_box = ClickBox(0, 0, 140, 40, lambda: None, string)
         self.time = 2000
 
     def save_piece(self):
+        """Outside function for saving piece
+        """
         self.set_flash_box("Saved")
         self.save_rules()
 
     def save_rules(self):
+        """Private function to save piece under modification
+        """
         rules = self.generate_sliding_rules()
         rules.extend(self.generate_jump_rules())
         self.set_current_piece(rules)
 
     def generate_sliding_rules(self):
+        """Generate sliding rules with all indexes
+
+        Returns:
+            Array with CombinedSlide and CombinedSlidingAttack rules
+        """
         self.increase_index()
         rules = [CombinedSlide(self.get_index_rules(i, False)) for i in range(1, self.index+1)]
         rules.extend([CombinedSlidingAttack(self.get_index_rules(i, True)) for i in range(1, self.index+1)])
         return rules
 
     def generate_jump_rules(self):
+        """Generate jump rules from the chosen squares
+
+        Returns:
+            Array with jump rules from the chosen squares
+        """
         self.save_chosen_squares()
         rules = [Jump(x[1]-3, x[0]-3) for x in self.saved if x[3] is False and x[4] is True]
         rules.extend([JumpAttack(x[1]-3, x[0]-3) for x in self.saved if x[3] is True and x[4] is True])
         return rules
 
     def copy_to_other(self):
+        """Copy attack moves to movement and movement moves to attack moves
+        """
         array_to_copy = [x for x in self.saved if x[3] == self.attack]
         array_to_copy.extend([(x[0], x[1], x[2], not x[3]) for x in array_to_copy])
         self.saved = array_to_copy

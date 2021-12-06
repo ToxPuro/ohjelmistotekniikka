@@ -3,6 +3,8 @@ from ui.board_ui import BoardUI
 from configs import SQ_SIZE
 
 class Board():
+    """Class that represents the chess board and works also as our chess engine
+    """
     def __init__(self, state, pieces, square_size=SQ_SIZE, player_num=2):
         self.state = state
         self.dimension = len(state)
@@ -16,13 +18,23 @@ class Board():
         self.selected = []
         self.board_ui = BoardUI()
 
-    def set_dimension(self, new_dimension):
-        self.dimension = new_dimension
-
     def draw_game_state(self, screen, valid_moves=[], selected_square=()):
+        """Delegates board drawing to BoardUI
+
+        Args:
+            screen: pygame screen on which to draw
+            valid_moves (list, optional): valid moves in the current state. Defaults to [].
+            selected_square (tuple, optional): square that the player has selected. Defaults to ().
+        """
         self.board_ui.draw_game_state(screen, valid_moves, selected_square, self)
 
     def make_move(self, move, simulation=False):
+        """Makes a move in the board. Can be simulated when checking for valid moves
+
+        Args:
+            move (Move): The move that is performed
+            simulation (bool, optional): Whether move is only simulated to check for valid moves. Defaults to False.
+        """
 
         self.state[move.start_row][move.start_col] = EmptySpace()
         self.state[move.end_row][move.end_col] = move.piece_moved
@@ -52,9 +64,22 @@ class Board():
             self.swap_turns()
 
     def swap_turns(self):
+        """Changes the turn to the other player
+        """
         self.turn = 2 if self.turn == 1 else 1
 
     def get_all_possible_moves(self, player, no_king=False):
+        """Gets all possible moves, even those that are invalid
+
+        Args:
+            player (int): player whose moves to get
+            no_king (bool, optional): Whether to get King's moves or not. Was included to sidestep infinite recursion
+            Where kings check if the other king can eat them when castling which requires to check whether the other king can eat them while castling and so on. 
+            Defaults to False.
+
+        Returns:
+            [type]: [description]
+        """
         moves = []
         for row, _ in enumerate(self.state):
             for col, _ in enumerate(self.state[row]):
@@ -68,6 +93,11 @@ class Board():
         return moves
 
     def get_all_valid_moves(self):
+        """Returns the valid subset of all moves
+
+        Returns:
+            moves [Move]: all valid moves 
+        """
         moves = self.get_all_possible_moves(self.turn)
         for i in range(len(moves)-1, -1, -1):
             self.make_move(moves[i], simulation=True)
@@ -78,15 +108,32 @@ class Board():
         return moves
 
     def checkmate(self):
+        """Returns whether the current state is checkmate
+
+        Returns:
+            checkmate bool: Whether it is checkmate
+        """
         return len(self.get_all_valid_moves()) == 0 and self.in_check()
 
     def stalemate(self):
+        """Returns whether the current state is stalemate 
+        """ 
         return len(self.get_all_valid_moves()) == 0 and not self.in_check()
 
     def in_check(self):
+        """Returns whether the the current player is in check
+
+        Returns:
+            returns True if is in check and False if not
+        """
         return self.square_under_attack(self.king_locations[self.turn])
 
     def undo_move(self, swap=True):
+        """Undoes the last move. swap is included since we don't want to swap the player when simulating
+
+        Args:
+            swap (bool, optional): Whether to swap the player after undoing the move. Defaults to True.
+        """
         if len(self.move_log) != 0:
             move = self.move_log.pop()
             self.state[move.start_row][move.start_col] = move.piece_moved
@@ -98,6 +145,14 @@ class Board():
                     move.start_row, move.start_col)
 
     def square_under_attack(self, position):
+        """Returns whether the square is under attack
+
+        Args:
+            position ([(row, col)]): the position to check if is under attack
+
+        Returns:
+            Returns True if under attack and false otherwise
+        """
         for player in range(1, self.player_num+1):
             if player != self.turn:
                 opponents_moves = self.get_all_possible_moves(
@@ -108,6 +163,8 @@ class Board():
         return False
 
     def delete_en_passant_squares(self):
+        """Removes the single en passant square if one exists
+        """
         if self.en_passant_squares:
             en_passant_square = self.en_passant_squares.pop()
             if self.state[en_passant_square[0]][en_passant_square[1]].is_en_passant():
@@ -115,6 +172,11 @@ class Board():
                            ][en_passant_square[1]] = EmptySpace()
 
     def create_en_passant_square(self, move):
+        """Creates an en passant square which pawns can eat
+
+        Args:
+            move (Move): The move that generated the en passant square
+        """
         if self.turn == 1:
             between_row = move.end_row+1
         else:
@@ -123,12 +185,26 @@ class Board():
         self.en_passant_squares.append((between_row, move.end_col))
 
     def promote(self, move):
+        """Promote a pawn to a Queen. TODO: other pieces
+
+        Args:
+            move (Move): The move that pushed the pawn to the end of the board
+        """
         if self.turn == 1:
             self.state[move.end_row][move.end_col] = self.pieces["wQ"]
         else:
             self.state[move.end_row][move.end_col] = self.pieces["bQ"]
 
     def set_selected(self, row, col, index, is_attack, is_jump):
+        """Sets a square in selected when creating piece movements
+
+        Args:
+            row (int): Row of the selected square
+            col (int): Column of the selected square
+            index (int): Which index the square belongs, is required to create sliding moves
+            is_attack (bool): Whether the square is selected for attack move
+            is_jump (bool): Whether the square is selected for jump move
+        """
         if self.state[row][col].is_empty():
             self.state[row][col] = SelectedSquare(is_attack)
             self.selected.append((row, col, index, is_attack, is_jump))
@@ -137,6 +213,8 @@ class Board():
             self.state[row][col] = EmptySpace()
 
     def delete_old_selected_squares(self):
+        """Delete all selected squares
+        """
         for square in self.selected:
             self.state[square[0]][square[1]] = EmptySpace()
         self.selected = []

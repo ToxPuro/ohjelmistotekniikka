@@ -12,7 +12,8 @@ from setting import Setting
 from generate import generate_initial_state, generate_initial_state2
 from configs import WIDHT, HEIGHT, SQ_SIZE, MAX_FPS
 
-
+"""The application entrypoint where the actual game is run
+"""
 
 
 
@@ -20,6 +21,12 @@ from configs import WIDHT, HEIGHT, SQ_SIZE, MAX_FPS
 
 
 def draw_text(screen, text):
+    """Helper function to draw text
+
+    Args:
+        screen: Pygame screen to draw on
+        text (string): Text to draw
+    """
     font = p.font.SysFont("Helvitca", 32, True, False)
     rendered_text = font.render(text, 0, p.Color("Gray"))
     text_location = p.Rect(0, 0, WIDHT, HEIGHT).move(
@@ -30,6 +37,11 @@ def draw_text(screen, text):
 
 
 def start_the_game(setting=None):
+    """Function to actually run the game
+
+    Args:
+        setting (Setting, optional): The settings the player has chosen. Defaults to None.
+    """
     screen = p.display.set_mode((setting.width, setting.height))
     setting = Setting() if setting is None else setting
     clock = p.time.Clock()
@@ -98,6 +110,13 @@ def start_the_game(setting=None):
 
 
 def download(screen, setting):
+    """Helper function to choose which piece to download. Sets the current piece to be the downloaded piece
+
+    Args:
+        screen: Pygame screen to draw on
+        setting (Setting): Settings the player has currently chosen
+        
+    """
     rule_reader = RuleReader()
     pieces = db.get_db_pieces()
     clock = p.time.Clock()
@@ -131,6 +150,13 @@ def download(screen, setting):
 
 
 def input_phase(screen, func, input_name):
+    """Helper function to get user input
+
+    Args:
+        screen: Pygame screen to draw on
+        func (function): Function that gets the user's input and is run
+        input_name (string): What to draw over input box
+    """
     clock = p.time.Clock()
     name_box = ClickBox(0, 0, 140, 40, lambda: None, input_name)
     input_box = InputBox(0, 40, 140, 32)
@@ -155,6 +181,12 @@ def input_phase(screen, func, input_name):
 
 
 def customize_board(setting, screen):
+    """Customize the piece positions
+
+    Args:
+        setting (Setting): Settings the player has currently chosen
+        screen: Pygame screen to draw on
+    """
     done = False
     clock = p.time.Clock()
     setting.clear_initial_state()
@@ -205,12 +237,10 @@ def customize_board(setting, screen):
         setting.flash_text(screen)
         p.display.flip()
 
-    initial_state, pieces = generate_initial_state2()
-    setting.board = Board(initial_state, pieces)
-
 
 def settings():
-    
+    """Player chooses settingss
+    """
     setting = Setting()
     old_width = setting.width
     screen = p.display.set_mode((setting.width, setting.height))
@@ -277,6 +307,8 @@ def settings():
 
 
 def main():
+    """Displays the menu to the player
+    """
     p.init()
     screen = p.display.set_mode((WIDHT, HEIGHT))
     menu = pygame_menu.Menu('Bizarro Chess', 400, 300,
