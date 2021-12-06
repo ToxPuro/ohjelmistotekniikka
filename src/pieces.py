@@ -101,7 +101,7 @@ class King(Piece):
                 CombinedSlide([SingleSlide(1, -1)]),
                 CombinedSlide([SingleSlide(-1, -1)]), CombinedSlide([SingleSlide(1, 0)]),
                  CombinedSlide([SingleSlide(-1, 0)]), CombinedSlide([SingleSlide(0, 1)]),
-                 CombinedSlide([SingleSlide(1, 1)]), CombinedSlide([SingleSlide(-1, -1)])]
+                 CombinedSlide([SingleSlide(1, 1)]), CombinedSlide([SingleSlide(-1, 1)])]
 
         rules.extend([CombinedSlidingAttack([SingleSlide(0, -1)]),
                     CombinedSlidingAttack([SingleSlide(1, -1)]),
@@ -110,7 +110,7 @@ class King(Piece):
                     CombinedSlidingAttack([SingleSlide(-1, 0)]),
                     CombinedSlidingAttack([SingleSlide(0, 1)]),
                     CombinedSlidingAttack([SingleSlide(1, 1)]),
-                    CombinedSlidingAttack([SingleSlide(-1, -1)])])
+                    CombinedSlidingAttack([SingleSlide(-1, 1)])])
 
         super().__init__(player, image, rules)
 

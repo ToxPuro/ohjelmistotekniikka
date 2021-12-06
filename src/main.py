@@ -30,7 +30,7 @@ def draw_text(screen, text):
 
 
 def start_the_game(setting=None):
-    screen = p.display.set_mode((WIDHT, HEIGHT))
+    screen = p.display.set_mode((setting.width, setting.height))
     setting = Setting() if setting is None else setting
     clock = p.time.Clock()
     screen.fill(p.Color("white"))

@@ -1,10 +1,11 @@
 from pieces import EmptySpace, EnPassantSquare, SelectedSquare
 from ui.board_ui import BoardUI
+from configs import SQ_SIZE
 
 class Board():
-    def __init__(self, state, pieces, dimension=8, square_size=64, player_num=2):
+    def __init__(self, state, pieces, square_size=SQ_SIZE, player_num=2):
         self.state = state
-        self.dimension = dimension
+        self.dimension = len(state)
         self.square_size = square_size
         self.turn = 1
         self.king_locations = {1: (7, 4), 2: (0, 4)}
@@ -17,7 +18,7 @@ class Board():
 
     def set_dimension(self, new_dimension):
         self.dimension = new_dimension
-        
+
     def draw_game_state(self, screen, valid_moves=[], selected_square=()):
         self.board_ui.draw_game_state(screen, valid_moves, selected_square, self)
 
