@@ -12,6 +12,9 @@ Week 4:
 Week 5:
     * Thu: 2,5h
     * Sat: 3,5h
+
+Week 6:
+    * Mon: 2h
     
-Total: 22h
+Total: 28h
     
