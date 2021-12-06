@@ -146,11 +146,14 @@ class EnPassantSquare(EmptySpace):
         pass
 
 
-class SelectedSquare():
+class SelectedSquare(EmptySpace):
     def __init__(self, is_attack):
         self.moved = False
         self.is_attack = is_attack
 
+    def is_empty(self):
+        return False
+        
     def draw(self, screen, square_size, position):
         p.draw.rect(screen, p.Color("red" if self.is_attack else "green"), p.Rect(
             position[1]*square_size, position[0]*square_size, square_size, square_size))

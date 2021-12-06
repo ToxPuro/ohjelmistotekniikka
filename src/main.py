@@ -259,6 +259,7 @@ def settings():
                 if col == 3 and row == 3:
                     if setting.slider and col == 3:
                         setting.increase_index()
+                        setting.save_rules()
                 else:
                     setting.board.set_selected(row, col, setting.index, setting.attack, not setting.slider)
 

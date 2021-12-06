@@ -2,6 +2,7 @@ from board import Board
 from generate import generate_initial_state2, IMAGES
 from pieces import Rook, Knight, EmptySpace, Bishop, King, Pawn, Piece, Queen
 from rules import Jump, JumpAttack, CombinedSlide, CombinedSlidingAttack, SingleSlide
+from ui.input_box import ClickBox
 from configs import SQ_SIZE
 class Setting():
     def __init__(self):
@@ -96,6 +97,22 @@ class Setting():
         initial_state, pieces = generate_initial_state2()
         self.board = Board(initial_state, pieces)
         self.piece_created = None
+        self.initial_state = [
+            ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+            ["bp" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty" for i in range(8)],
+            ["empty"for i in range(8)],
+            ["wp" for i in range(8)],
+            ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
+        ]
+
+        self.height = self.width = SQ_SIZE*8
+        self.saved = []
+
+        self.set_board_dimension(8)
+
         self.index = 1
 
     def flip_slider(self):
@@ -113,6 +130,8 @@ class Setting():
     def increase_index(self):
         self.index += 1
         self.save_chosen_squares()
+
+
 
     def save_chosen_squares(self):
         self.saved.extend(self.board.selected)
@@ -200,8 +219,10 @@ class Setting():
         self.time = 2000
 
     def save_piece(self):
-        print(self.saved)
         self.set_flash_box("Saved")
+        self.save_rules()
+
+    def save_rules(self):
         rules = self.generate_sliding_rules()
         rules.extend(self.generate_jump_rules())
         self.set_current_piece(rules)
