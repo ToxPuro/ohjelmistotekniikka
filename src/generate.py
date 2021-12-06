@@ -26,4 +26,4 @@ def load_images():
               "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load(
-            f"../images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
+            f"./images/{piece}.png"), (SQ_SIZE, SQ_SIZE))
