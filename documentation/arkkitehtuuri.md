@@ -50,3 +50,15 @@ Nappuloista tallenetaan vain niiden liikkumissäännöt, sillä ne ovat se oleel
 Säännöt tallenetaan NoSQL-tietokantaan MongoDB:hen JSON-esityksessä, joka myöhemmin luetaan takaisin vastaavaan objektiin
 
 Tietokanta on netissä MongoDB Atlas pilvipalveluksessa. Sovellus keskustelee tietokannan pymongo-kirjaston avulla
+
+## Käyttöliittymä
+
+Sovelluksessa on kaksi pääasiallista käyttöliittymää: Asetukset ja pelaaminen itse
+
+Kummaktin näistä käyttävät samanlaista käyttölittyymää: shakkilautaa
+
+Pelaamisen käyttöliittymässä ei ole mitään ylimääräistä
+
+Sen sijaan asetuksista oikealta yläkulmalta löytyy nappuloita joiden avulla asetuksia voidaan muokata.
+
+Sen lisäksi painamalla laudan ruutuja käyttäjä voi valita liikkeitä
