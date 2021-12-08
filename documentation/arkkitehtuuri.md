@@ -55,10 +55,14 @@ Tietokanta on netissä MongoDB Atlas pilvipalveluksessa. Sovellus keskustelee ti
 
 Sovelluksessa on kaksi pääasiallista käyttöliittymää: Asetukset ja pelaaminen itse
 
-Kummaktin näistä käyttävät samanlaista käyttölittyymää: shakkilautaa
+Kummatkin näistä käyttävät samanlaista käyttölittyymää: shakkilautaa
 
 Pelaamisen käyttöliittymässä ei ole mitään ylimääräistä
 
+![Käyttöliittymä](./kuvat/Selection_009.png)
+
 Sen sijaan asetuksista oikealta yläkulmalta löytyy nappuloita joiden avulla asetuksia voidaan muokata.
+
+![Käyttöliittymä](./kuvat/asetukset.png)
 
 Sen lisäksi painamalla laudan ruutuja käyttäjä voi valita liikkeitä

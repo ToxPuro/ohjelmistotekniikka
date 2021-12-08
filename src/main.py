@@ -251,7 +251,7 @@ def settings():
 
     while running:
 
-        print(setting.width)
+
         if old_width != setting.width:
             screen = p.display.set_mode((setting.width, setting.height))
             old_width = setting.width
