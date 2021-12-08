@@ -15,7 +15,7 @@ Luokilla Piece ja Rule on monta aliluokkaa, Knight, King, Queen, SingleSlide, Co
 
 ![Luokkakaavio](./kuvat/luokka_kaavio.jpg)
 
-##Esimerkki toiminta
+## Esimerkki toiminta
 
 Esimerkkinä sovelluksen toiminnasta on oleellinen esimerkki: laillisten liikkeiden muodostaminen
 
@@ -43,7 +43,7 @@ Board näin poistaa laittomat liikeet ja voi vihdoin palauttaa Mainiin lailliset
 
 ![Sekvenssikaavio](./kuvat/sekvenssi_kaavio.png)
 
-##Nappuloiden pysyvä tallennus
+## Nappuloiden pysyvä tallennus
 
 Nappuloista tallenetaan vain niiden liikkumissäännöt, sillä ne ovat se oleellinen osa luodusta nappulasta.
 
