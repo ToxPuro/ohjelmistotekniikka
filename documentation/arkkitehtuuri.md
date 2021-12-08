@@ -15,6 +15,9 @@ Luokilla Piece ja Rule on monta aliluokkaa, Knight, King, Queen, SingleSlide, Co
 
 ![Luokkakaavio](./kuvat/luokka_kaavio.jpg)
 
+##Esimerkki toiminta
+
+Esimerkkinä sovelluksen toiminnasta on oleellinen esimerkki: laillisten liikkeiden muodostaminen
 
 Aluksi sovelluksen pelatessa Mainissa halutaan tuottaa kaikki lailliset liikkeet.
 
@@ -39,3 +42,11 @@ Menemme siis aikaisemman syklin uudestaan läpi.
 Board näin poistaa laittomat liikeet ja voi vihdoin palauttaa Mainiin lailliset liikeet
 
 ![Sekvenssikaavio](./kuvat/sekvenssi_kaavio.png)
+
+##Nappuloiden pysyvä tallennus
+
+Nappuloista tallenetaan vain niiden liikkumissäännöt, sillä ne ovat se oleellinen osa luodusta nappulasta.
+
+Säännöt tallenetaan NoSQL-tietokantaan MongoDB:hen JSON-esityksessä, joka myöhemmin luetaan takaisin vastaavaan objektiin
+
+Tietokanta on netissä MongoDB Atlas pilvipalveluksessa. Sovellus keskustelee tietokannan pymongo-kirjaston avulla
