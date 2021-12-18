@@ -13,7 +13,6 @@ Sovellus on shakkipeli, jossa käyttäjä voi luoda omia nappuloita, jotka liikk
 * Voi valita laudan koon (Done, Week 6)
 * Voi ladata nettiin omia uniikkeja nappuloita, joita muut pelaajat voivat ladata omaan peliin
     * Sama käyttöliittymä kuin nappuloiden luonti
-* Voi valita täysin satunnaisen lauta konfiguraation, jonka sovellus luo pelaajalle
 
 ## Jatkokehitysideoita
 
