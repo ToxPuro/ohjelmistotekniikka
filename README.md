@@ -12,6 +12,7 @@ Current state of code is pretty messy, trying to prototype will refactor later
 [Määrittelydokumentti](https://github.com/ToxPuro/ohjelmistotekniikka/tree/main/documentation/maarittelydokumentti.md)
 
 [Käyttöohjeet](https://github.com/ToxPuro/ohjelmistotekniikka/tree/main/documentation/kaytto_ohjeet.md)
+
 Download dependencies with poetry install
 
 Start the application with poetry invoke start
