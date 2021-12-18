@@ -42,8 +42,8 @@ def start_the_game(setting=None):
     Args:
         setting (Setting, optional): The settings the player has chosen. Defaults to None.
     """
-    screen = p.display.set_mode((setting.width, setting.height))
     setting = Setting() if setting is None else setting
+    screen = p.display.set_mode((setting.width, setting.height))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     initial_state, pieces = generate_initial_state(setting)
@@ -251,7 +251,7 @@ def settings():
 
     while running:
 
-        print(setting.width)
+
         if old_width != setting.width:
             screen = p.display.set_mode((setting.width, setting.height))
             old_width = setting.width

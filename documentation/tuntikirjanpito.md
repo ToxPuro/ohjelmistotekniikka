@@ -14,7 +14,7 @@ Week 5:
     * Sat: 3,5h
 
 Week 6:
-    * Mon: 2h
+    * Mon: 3h
     
-Total: 28h
+Total: 29h
     
